@@ -1,5 +1,5 @@
 
-import "./globals.css";
+import "../globals.css";
 
 import NextTopLoader from 'nextjs-toploader';
 
@@ -8,6 +8,10 @@ import { Inter } from "next/font/google";
 
 import { ThemeProvider } from "@/providers/theme";
 import { Providers } from "@/providers/session";
+import { getServerAuthSession } from '@/servers/auth'
+
+import LeftSidebar from "@/components/shared/sidebar";
+import Topbar from "@/components/shared/topbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,11 +20,13 @@ export const metadata: Metadata = {
   description: "At Saptakarya, we blend creativity with precision to transform your ideas into reality. Discover our comprehensive range of innovative solutions designed to elevate your business to new heights. Partner with us and unlock the potential of your vision today. Welcome to Saptakarya – Where Innovation Meets Excellence.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const authSession = await getServerAuthSession()
+
   return (
     <html
       lang="en"
@@ -33,7 +39,15 @@ export default function RootLayout({
           defaultTheme="light"
           disableTransitionOnChange
         >
-          <Providers>{children}</Providers>
+          {authSession && <Topbar />}
+          <main className="flex flex-row">
+            {authSession && <LeftSidebar />}
+            <section className="main-container">
+              <div className="w-full max-w-screen">
+                <Providers>{children}</Providers>
+              </div>
+            </section>
+          </main>
         </ThemeProvider>  
       </body>
     </html>
