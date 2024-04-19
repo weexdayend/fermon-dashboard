@@ -54,5 +54,5 @@ jobs:
             -e NEXT_PUBLIC_MAPBOX_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }} \
             -e MAP_TILER=${{ secrets.MAP_TILER }} \
             -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
-            -e NEXTAUTH_URL="/"
+            -e NEXTAUTH_URL="/" \
             ${{ secrets.DOCKERHUB_USERNAME }}/fermon-admin:latest
