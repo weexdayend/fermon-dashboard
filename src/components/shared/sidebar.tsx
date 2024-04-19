@@ -1,21 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import { sideLinks } from "@/types/types"
-
 import { Button } from "@/components/ui/button"
-import {
-  PowerCircleIcon
-} from 'lucide-react'
 
 const LeftSidebar = () => {
-
-  const handleLogout = async () => {
-    await signOut()
-  }
-
   const pathname = usePathname();
 
   return (
@@ -39,7 +29,7 @@ const LeftSidebar = () => {
           );
         })}
       </div>
-
+{/* 
       <div className='mt-10 px-6'>
         <Button variant={'outline'} className="w-full border-0" onClick={handleLogout}>
           <div className='flex flex-row items-center justify-start cursor-pointer gap-2 p-4'>
@@ -48,7 +38,7 @@ const LeftSidebar = () => {
             <p className='text-sm max-lg:hidden'>Logout</p>
           </div>
         </Button>
-      </div>
+      </div> */}
     </section>
   );
 };

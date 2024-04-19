@@ -12,6 +12,7 @@ import { getServerAuthSession } from '@/servers/auth'
 
 import LeftSidebar from "@/components/shared/sidebar";
 import Topbar from "@/components/shared/topbar";
+import PageTitle from "@/components/shared/page-title";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,7 +40,6 @@ export default async function RootLayout({
           defaultTheme="light"
           disableTransitionOnChange
         >
-          {authSession && <Topbar />}
           <main className="flex flex-row">
             {authSession && <LeftSidebar />}
             <section className="main-container">
