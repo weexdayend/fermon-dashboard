@@ -35,7 +35,7 @@ function Event({}: Props) {
 
   const handle = async () => {
     try {
-      const response = await axios.post('https://api.synchronice.id/send-message-to-client', null, {
+      const response = await axios.get('https://api.synchronice.id/send-message-to-client', {
         headers: {
           'Access-Control-Allow-Origin': 'https://admin.synchronice.id',
           'Access-Control-Allow-Methods': 'POST',
