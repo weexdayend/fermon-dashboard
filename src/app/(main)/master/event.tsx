@@ -1,5 +1,7 @@
 'use client'
 
+import { Button } from '@/components/ui/button';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 
 type Props = {}
@@ -30,9 +32,16 @@ function Event({}: Props) {
       eventSource.close();
     };
   }, []);
+
+  const handle = async() => {
+    await axios.post('https://api.synchronice.id/send-message-to-client')
+  }
   
   return (
-    <div>Event Stream</div>
+    <div className='w-full h-full flex flex-col'>
+      <h1>Event Stream</h1>
+      <Button variant={'outline'} onClick={handle}>Test Event</Button>
+    </div>
   )
 }
 
