@@ -48,7 +48,7 @@ jobs:
 
           docker system prune -f
           docker run --name fermon-admin -dit \
-            -p 4000:4000 \
+            -p 7654:7654 \
             -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
             -e DIRECT_URL=${{ secrets.DIRECT_URL }} \
             -e NEXT_PUBLIC_MAPBOX_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }} \
