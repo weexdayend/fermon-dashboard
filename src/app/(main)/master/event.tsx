@@ -33,9 +33,21 @@ function Event({}: Props) {
     };
   }, []);
 
-  const handle = async() => {
-    await axios.post('https://api.synchronice.id/send-message-to-client')
-  }
+  const handle = async () => {
+    try {
+      const response = await axios.post('https://api.synchronice.id/send-message-to-client', null, {
+        headers: {
+          'Access-Control-Allow-Origin': 'https://admin.synchronice.id',
+          'Access-Control-Allow-Methods': 'POST',
+          'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+        }
+      });
+      console.log('Response:', response.data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
   
   return (
     <div className='w-full h-full flex flex-col'>
