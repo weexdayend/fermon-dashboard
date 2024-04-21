@@ -8,6 +8,14 @@ import {
   Users2Icon
 } from 'lucide-react'
 
+export type Session = {
+  // Define the structure of your session data here
+  // For example:
+  userId: string;
+  username: string;
+  // Add other fields as needed
+};
+
 export const sideLinks = [
   {
     imgURL: HomeIcon,

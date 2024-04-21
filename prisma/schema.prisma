@@ -412,3 +412,13 @@ model user {
   role   String
   id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 }
+
+model File {
+  id         Int       @id @default(autoincrement())
+  filename   String
+  url        String
+  filesize   Int
+  mimeType   String
+  uploadedAt DateTime  @default(now())
+  user       String
+}

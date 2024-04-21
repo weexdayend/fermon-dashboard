@@ -1,7 +1,7 @@
 'use client'
 
 import axios, { AxiosRequestConfig } from 'axios'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -29,11 +29,13 @@ function TabContents({}: Props) {
   const [progress, setProgress] = useState(0);
   const [remaining, setRemaining] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [tabIdentifier, setTabIdentifier] = useState<string | null>(null)
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, identifier: string) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
+      setTabIdentifier(identifier)
     }
   };
 
@@ -47,16 +49,18 @@ function TabContents({}: Props) {
     const formData = new FormData();
     formData.append('file', file);
 
+    if (tabIdentifier) {
+      formData.append('tabIdentifier', tabIdentifier);
+    }
+
     const options: AxiosRequestConfig = {
-      headers: { "Content-Type": "text/plain" },
+      headers: { "Content-Type": "multipart/form-data" },
       onUploadProgress: (progressEvent: any) => {
         const { loaded, total } = progressEvent;
   
-        // Calculate the progress percentage
         const percentage = (loaded * 100) / total;
         setProgress(+percentage.toFixed(2));
   
-        // Calculate the progress duration
         const timeElapsed = Date.now() - startAt;
         const uploadSpeed = loaded / timeElapsed;
         const duration = (total - loaded) / uploadSpeed;
@@ -65,11 +69,7 @@ function TabContents({}: Props) {
     };
 
     try {      
-      await axios.post<{
-        data: {
-          url: string | string[];
-        };
-      }>('https://api.synchronice.id/upload', formData, options)
+      await axios.post('https://api.synchronice.id/upload-file', formData, options)
       .then(({ data }) => {
   
         console.log("File was uploaded successfylly:", data);
@@ -103,7 +103,7 @@ function TabContents({}: Props) {
                 type="file" 
                 accept=".csv" 
                 className='invert text-white'
-                onChange={handleFileChange}
+                onChange={(e) => handleFileChange(e, 'F5')}
               />
               <p className='text-sm opacity-70'>Upload your file report f5 here, the file must <span className='font-bold underline'>csv</span> extension.</p>
               {error && <p className="text-red-500">{error}</p>}
@@ -125,7 +125,7 @@ function TabContents({}: Props) {
                 type="file" 
                 accept=".csv" 
                 className='invert text-white'
-                onChange={handleFileChange}
+                onChange={(e) => handleFileChange(e, 'F6')}
               />
               <p className='text-sm opacity-70'>Upload your file report f6 here, the file must <span className='font-bold underline'>csv</span> extension.</p>
               {error && <p className="text-red-500">{error}</p>}

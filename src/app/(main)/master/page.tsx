@@ -8,7 +8,7 @@ type Props = {}
 function Master({}: Props) {
   return (
     <div className='w-full h-full flex flex-col gap-4'>
-      <div className='grid grid-cols-2 w-full gap-4'>
+      <div className='grid grid-cols-1 w-full gap-4'>
         <TabContents />
         <DataTables />
       </div>
