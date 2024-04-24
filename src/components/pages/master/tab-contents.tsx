@@ -22,14 +22,63 @@ import {
 } from "@/components/ui/tabs"
 import SimpleProgressBar from '@/components/shared/progress'
 
-type Props = {}
+import { socket } from '@/socket'
 
-function TabContents({}: Props) {  
+type Props = {
+  handle: (value: any) => void;
+}
+
+function TabContents({ handle }: Props) {  
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState(0);
   const [remaining, setRemaining] = useState(0);
+  const [uploaded, setUploaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tabIdentifier, setTabIdentifier] = useState<string | null>(null)
+
+  const [isConnected, setIsConnected] = useState(false);
+  const [transport, setTransport] = useState("N/A");
+  const [eventSocket, setEventSocket] = useState<any>([])
+
+  useEffect(() => {
+    if (socket.connected) {
+      onConnect();
+    }
+
+    function onConnect() {
+      setIsConnected(true);
+      setTransport(socket.io.engine.transport.name);
+
+      socket.io.engine.on("upgrade", (transport) => {
+        setTransport(transport.name);
+      });
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+      setTransport("N/A");
+    }
+
+    function onMyResponse(value: any) {
+      setEventSocket((prevEvents: any) => [...prevEvents, value]);
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("pyResponse", onMyResponse);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("pyResponse", onMyResponse);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (eventSocket) [
+      handle(eventSocket)
+    ]
+  }, [eventSocket])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, identifier: string) => {
     const selectedFile = e.target.files?.[0];
@@ -40,6 +89,7 @@ function TabContents({}: Props) {
   };
 
   const handleUpload = async () => {
+    setUploaded(true)
     if (!file) {
       setError('Please select a file to upload.');
       return;
@@ -65,17 +115,22 @@ function TabContents({}: Props) {
         const uploadSpeed = loaded / timeElapsed;
         const duration = (total - loaded) / uploadSpeed;
         setRemaining(duration);
+
+        if (percentage === 100) {
+          setUploaded(false);
+        }
       },
     };
 
     try {      
-      await axios.post('https://api.synchronice.id/upload-file', formData, options)
+      await axios.post('https://socket.synchronice.id/upload', formData, options)
       .then(({ data }) => {
-  
+        
         console.log("File was uploaded successfylly:", data);
 
       })
-      // Handle success
+
+      setUploaded(false)
     } catch (e: any) {
       setError('Error uploading the file.');
       console.error(e);
@@ -106,12 +161,15 @@ function TabContents({}: Props) {
                 onChange={(e) => handleFileChange(e, 'F5')}
               />
               <p className='text-sm opacity-70'>Upload your file report f5 here, the file must <span className='font-bold underline'>csv</span> extension.</p>
-              {error && <p className="text-red-500">{error}</p>}
             </div>
           </CardContent>
-          <CardFooter className='flex flex-col gap-2'>
-            <SimpleProgressBar progress={progress} remaining={remaining} />
-            <Button className='ml-auto' onClick={handleUpload}>Upload data</Button>
+          <CardFooter className='flex flex-col gap-4'>
+            {
+              uploaded && <SimpleProgressBar progress={progress} remaining={remaining} />
+            }
+            {
+              eventSocket.length > 0 ? (<></>) : (<Button className='ml-auto' onClick={handleUpload}>Upload data</Button>)
+            }
           </CardFooter>
         </Card>
       </TabsContent>
@@ -128,12 +186,15 @@ function TabContents({}: Props) {
                 onChange={(e) => handleFileChange(e, 'F6')}
               />
               <p className='text-sm opacity-70'>Upload your file report f6 here, the file must <span className='font-bold underline'>csv</span> extension.</p>
-              {error && <p className="text-red-500">{error}</p>}
             </div>
           </CardContent>
-          <CardFooter className='flex flex-col gap-2'>
-            <SimpleProgressBar progress={progress} remaining={remaining} />
-            <Button className='ml-auto' onClick={handleUpload}>Upload data</Button>
+          <CardFooter className='flex flex-col gap-4'>
+            {
+              uploaded && <SimpleProgressBar progress={progress} remaining={remaining} />
+            }
+            {
+              eventSocket.length > 0 ? (<></>) : (<Button className='ml-auto' onClick={handleUpload}>Upload data</Button>)
+            }
           </CardFooter>
         </Card>
       </TabsContent>
