@@ -35,20 +35,15 @@ export default async function RootLayout({
     >
       <body className={inter.className}>
         <NextTopLoader showSpinner={false} />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          disableTransitionOnChange
-        >
-          <main className="flex flex-row">
-            {authSession && <LeftSidebar />}
-            <section className="main-container">
-              <div className="w-full max-w-screen">
-                <Providers>{children}</Providers>
-              </div>
-            </section>
-          </main>
-        </ThemeProvider>  
+        <main className="flex flex-row">
+          {authSession && <LeftSidebar />}
+          {authSession && <Topbar />}
+          <section className="main-container">
+            <div className="w-full max-w-screen">
+              <Providers>{children}</Providers>
+            </div>
+          </section>
+        </main>
       </body>
     </html>
   );

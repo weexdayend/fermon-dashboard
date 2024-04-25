@@ -28,7 +28,7 @@ type Props = {
   handle: (value: any) => void;
 }
 
-function TabContents({ handle }: Props) {  
+function TabContents({ handle }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState(0);
   const [remaining, setRemaining] = useState(0);
@@ -107,10 +107,10 @@ function TabContents({ handle }: Props) {
       headers: { "Content-Type": "multipart/form-data" },
       onUploadProgress: (progressEvent: any) => {
         const { loaded, total } = progressEvent;
-  
+
         const percentage = (loaded * 100) / total;
         setProgress(+percentage.toFixed(2));
-  
+
         const timeElapsed = Date.now() - startAt;
         const uploadSpeed = loaded / timeElapsed;
         const duration = (total - loaded) / uploadSpeed;
@@ -122,13 +122,13 @@ function TabContents({ handle }: Props) {
       },
     };
 
-    try {      
-      await axios.post('https://socket.synchronice.id/upload', formData, options)
-      .then(({ data }) => {
-        
-        console.log("File was uploaded successfylly:", data);
+    try {
+      await axios.post('https://api.synchronice.id/upload/bulan/f5', formData, options)
+        .then(({ data }) => {
 
-      })
+          console.log("File was uploaded successfylly:", data);
+
+        })
 
       setUploaded(false)
     } catch (e: any) {
@@ -141,7 +141,7 @@ function TabContents({ handle }: Props) {
       alert(error);
     }
   };
-  
+
   return (
     <Tabs defaultValue="distributor" className="w-full h-fit">
       <TabsList className="grid w-full grid-cols-2">
@@ -153,10 +153,10 @@ function TabContents({ handle }: Props) {
           <CardContent className="space-y-2 pt-6">
             <div className="space-y-1">
               <Label htmlFor="file">File F5</Label>
-              <Input 
-                id="file" 
-                type="file" 
-                accept=".csv" 
+              <Input
+                id="file"
+                type="file"
+                accept=".csv"
                 className='invert text-white'
                 onChange={(e) => handleFileChange(e, 'F5')}
               />
@@ -178,10 +178,10 @@ function TabContents({ handle }: Props) {
           <CardContent className="space-y-2 pt-6">
             <div className="space-y-1">
               <Label htmlFor="file">File F6</Label>
-              <Input 
-                id="file" 
-                type="file" 
-                accept=".csv" 
+              <Input
+                id="file"
+                type="file"
+                accept=".csv"
                 className='invert text-white'
                 onChange={(e) => handleFileChange(e, 'F6')}
               />
