@@ -101,7 +101,7 @@ type UserListProps = {
   tahun: string
   besaran: string
   kode_produk: string
-  nama_produk: string
+  produk: string
   kategori: string
 }
 
@@ -622,9 +622,9 @@ function ListHarga({ eventMessage, eventSocket }: Props) {
                     />
                     <Input
                       placeholder="Filter nama produk..."
-                      value={(table.getColumn("nama_produk")?.getFilterValue() as string) ?? ""}
+                      value={(table.getColumn("produk")?.getFilterValue() as string) ?? ""}
                       onChange={(event) =>
-                        table.getColumn("nama_produk")?.setFilterValue(event.target.value)
+                        table.getColumn("produk")?.setFilterValue(event.target.value)
                       }
                       className="max-w-sm"
                     />
