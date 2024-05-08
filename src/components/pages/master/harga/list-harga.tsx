@@ -149,7 +149,6 @@ function ListHarga({ eventMessage, eventSocket }: Props) {
         tahun: database
       });
 
-      console.log(response.data)
       setData(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
