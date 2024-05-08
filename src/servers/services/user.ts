@@ -9,7 +9,7 @@ async function authenticate(username: string, password: string) {
     throw new Error('Username and password are required');
   }
 
-  const response = await axios.post('https://api.synchronice.id/login', {
+  const response = await axios.post('https://api.greatjbb.com/login', {
     username,
     password
   });

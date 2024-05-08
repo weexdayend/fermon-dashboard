@@ -86,7 +86,7 @@ function ListWilayah({}: Props) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://api.synchronice.id/wilayah/all');
+      const response = await axios.get('https://api.greatjbb.com/wilayah/all');
 
       setData(response.data);
     } catch (error) {

@@ -83,7 +83,7 @@ function TabContents({ eventSocket, eventMessage, handleTabIdentifier }: Props) 
     };
 
     try {
-      await axios.post(`https://api.synchronice.id/upload/bulan/${tabIdentifier}`, formData, options)
+      await axios.post(`https://api.greatjbb.com/upload/bulan/${tabIdentifier}`, formData, options)
         .then(({ data }) => {
           setFile(null)
         })

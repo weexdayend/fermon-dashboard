@@ -113,7 +113,7 @@ function ListProvinsi({}: Props) {
     setData([])
     setLoader(true)
     try {
-      const response = await axios.post('https://api.synchronice.id/wilayah/provinsi', {
+      const response = await axios.post('https://api.greatjbb.com/wilayah/provinsi', {
         kode: "",
         nama: ""
       });

@@ -64,7 +64,7 @@ function CardProfile({}: Props) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.post('https://api.synchronice.id/user', { email: session?.user.email });
+      const response = await axios.post('https://api.greatjbb.com/user', { email: session?.user.email });
 
       setData(response.data);
     } catch (error) {

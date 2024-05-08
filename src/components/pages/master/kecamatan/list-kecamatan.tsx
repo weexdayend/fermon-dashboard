@@ -107,7 +107,7 @@ function ListKecamatan({}: Props) {
   const fetchData = async () => {
     setData([])
     try {
-      const response = await axios.post('https://api.synchronice.id/wilayah/kecamatan', {
+      const response = await axios.post('https://api.greatjbb.com/wilayah/kecamatan', {
         kode: "",
         nama: ""
       });

@@ -66,8 +66,8 @@ function FormPetugas({ dataPetugas }: Props) {
 
     try {
       dataPetugas
-        ? await axios.put(`https://api.synchronice.id/user`, payload)
-        : await axios.post('https://api.synchronice.id/register', payload);
+        ? await axios.put(`https://api.greatjbb.com/user`, payload)
+        : await axios.post('https://api.greatjbb.com/register', payload);
     } catch (error) {
         console.error('Error:', error);
     }

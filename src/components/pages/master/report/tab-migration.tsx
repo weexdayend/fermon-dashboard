@@ -91,7 +91,7 @@ function TabMigration({ tabIdentifier, exampleData, migrationMessage, migrationS
 
   const handleMigrate = async (grant_access: any) => {
     try {
-      const response = await axios.post('https://api.synchronice.id/migrate', { tabIdentifier, grant_access });
+      const response = await axios.post('https://api.greatjbb.com/migrate', { tabIdentifier, grant_access });
 
       if (response.status === 200) {
         console.log('Response:', response.data);

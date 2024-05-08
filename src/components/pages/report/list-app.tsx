@@ -95,7 +95,7 @@ function ListApp({}: Props) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://api.synchronice.id/app-relation');
+      const response = await axios.get('https://api.greatjbb.com/app-relation');
       
       setData(response.data);
     } catch (error) {
@@ -125,8 +125,8 @@ function ListApp({}: Props) {
 
     try {
       const response = appId
-        ? await axios.put(`https://api.synchronice.id/app-relation`, payload)
-        : await axios.post('https://api.synchronice.id/app-relation', payload);
+        ? await axios.put(`https://api.greatjbb.com/app-relation`, payload)
+        : await axios.post('https://api.greatjbb.com/app-relation', payload);
       
       if (response.status === 200) {
         console.log(`Application ${appId ? 'edited' : 'added'} successfully!`);

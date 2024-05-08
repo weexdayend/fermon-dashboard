@@ -107,7 +107,7 @@ function ListUser({}: Props) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://api.synchronice.id/user/all');
+      const response = await axios.get('https://api.greatjbb.com/user/all');
 
       setData(response.data);
     } catch (error) {
@@ -125,7 +125,7 @@ function ListUser({}: Props) {
     }
 
     try {
-      const response = await axios.post('https://api.synchronice.id/user', payload);
+      const response = await axios.post('https://api.greatjbb.com/user', payload);
       const data = response.data
 
       setItem(data)
@@ -161,8 +161,8 @@ function ListUser({}: Props) {
 
     try {
       userId
-        ? await axios.put(`https://api.synchronice.id/user`, payload)
-        : await axios.post('https://api.synchronice.id/register', payload);
+        ? await axios.put(`https://api.greatjbb.com/user`, payload)
+        : await axios.post('https://api.greatjbb.com/register', payload);
       
       fetchData();
     } catch (error) {

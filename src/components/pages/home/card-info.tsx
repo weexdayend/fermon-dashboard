@@ -24,7 +24,7 @@ function CardInfo({}: Props) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://api.synchronice.id/total')
+      const response = await axios.get('https://api.greatjbb.com/total')
 
       setData(response.data);
     } catch(error) {

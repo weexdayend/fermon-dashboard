@@ -153,7 +153,7 @@ function ListAlokasi({ eventSocket, eventMessage }: Props) {
     setData([])
     setLoader(true)
     try {
-      const response = await axios.post('https://api.synchronice.id/admin/alokasi/distributor', {
+      const response = await axios.post('https://api.greatjbb.com/admin/alokasi/distributor', {
         tahun: database
       });
 
@@ -380,7 +380,7 @@ function ListAlokasi({ eventSocket, eventMessage }: Props) {
     };
 
     try {
-      await axios.post(`https://api.synchronice.id/bulk`, formData, options)
+      await axios.post(`https://api.greatjbb.com/bulk`, formData, options)
         .then(({ data }) => {
           setFile(null)
         })

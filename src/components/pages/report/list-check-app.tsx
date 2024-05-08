@@ -135,7 +135,7 @@ function CheckupApp({}: Props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://api.synchronice.id/app-checkup');
+        const response = await axios.get('https://api.greatjbb.com/app-checkup');
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);

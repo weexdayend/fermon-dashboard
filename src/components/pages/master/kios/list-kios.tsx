@@ -141,7 +141,7 @@ function ListKios({ eventSocket, eventMessage }: Props) {
     setData([])
     setLoader(true)
     try {
-      const response = await axios.post('https://api.synchronice.id/kios/id', {
+      const response = await axios.post('https://api.greatjbb.com/kios/id', {
         kode: "",
         tahun: database
       });
@@ -347,7 +347,7 @@ function ListKios({ eventSocket, eventMessage }: Props) {
     };
 
     try {
-      await axios.post(`https://api.synchronice.id/bulk`, formData, options)
+      await axios.post(`https://api.greatjbb.com/bulk`, formData, options)
         .then(({ data }) => {
           setFile(null)
         })

@@ -150,7 +150,7 @@ function ListMapping({ eventMessage, eventSocket }: Props) {
     setData([])
     setLoader(true)
     try {
-      const response = await axios.post('https://api.synchronice.id/mapping/area', {
+      const response = await axios.post('https://api.greatjbb.com/mapping/area', {
         kode_provinsi: "",
         kode_kab_kota: "",
         kode_kecamatan: "",
@@ -419,7 +419,7 @@ function ListMapping({ eventMessage, eventSocket }: Props) {
     };
 
     try {
-      await axios.post(`https://api.synchronice.id/bulk`, formData, options)
+      await axios.post(`https://api.greatjbb.com/bulk`, formData, options)
         .then(({ data }) => {
           setFile(null)
         })

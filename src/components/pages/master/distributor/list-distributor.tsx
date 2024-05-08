@@ -141,7 +141,7 @@ function ListDistributor({ eventMessage, eventSocket }: Props) {
     setData([])
     setLoader(true)
     try {
-      const response = await axios.post('https://api.synchronice.id/distributor/id', {
+      const response = await axios.post('https://api.greatjbb.com/distributor/id', {
         kode: "",
         tahun: database
       });
@@ -347,7 +347,7 @@ function ListDistributor({ eventMessage, eventSocket }: Props) {
     };
 
     try {
-      await axios.post(`https://api.synchronice.id/bulk`, formData, options)
+      await axios.post(`https://api.greatjbb.com/bulk`, formData, options)
         .then(({ data }) => {
           setFile(null)
         })
