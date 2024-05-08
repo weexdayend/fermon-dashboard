@@ -1,10 +1,13 @@
 import React from 'react'
+import Index from '@/components/pages/profile'
 
 type Props = {}
 
 function ProfileUser({}: Props) {
   return (
-    <div>ProfileUser</div>
+    <div className='w-full h-full flex flex-col'>
+      <Index />
+    </div>
   )
 }
 

@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import axios from 'axios';
 
 export const userService = {
   authenticate,
@@ -11,16 +9,12 @@ async function authenticate(username: string, password: string) {
     throw new Error('Username and password are required');
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: username,
-      role: 'ADMIN'
-    },
+  const response = await axios.post('https://api.synchronice.id/login', {
+    username,
+    password
   });
 
-  if (!user || !user.hashed || !checkPassword(password, user.hashed)) {
-    return null;
-  }
+  const user = response.data;
 
   return {
     id: user.id,
@@ -28,9 +22,4 @@ async function authenticate(username: string, password: string) {
     email: user.email,
     role: user.role
   };
-}
-
-// Function to check if the provided password matches the hashed password
-function checkPassword(password: string, hashedPassword: string) {
-  return password === hashedPassword;
 }

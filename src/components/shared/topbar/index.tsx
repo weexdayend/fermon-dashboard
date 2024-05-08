@@ -1,14 +1,16 @@
 import Image from 'next/legacy/image'
 import Link from 'next/link'
 
-import Profile from './profile';
+import ActionButton from './action-button';
 
 const imageWidth = 100;
 const aspectRatio = 50 / 100;
 
-export default async function Topbar() {
+type Props = {}
+
+function Index({}: Props) {
   return (
-    <nav className='topbar bg-background'>
+    <nav className='topbar bg-background border-b shadbow-xl'>
       <Link href='/home' className='flex items-center justify-center'>
         <Image
           src="/assets/icons/logo-pi-warna.svg"
@@ -19,7 +21,9 @@ export default async function Topbar() {
         />
       </Link>
 
-      <Profile />
+      <ActionButton />
     </nav>
-  );
+  )
 }
+
+export default Index

@@ -2,24 +2,71 @@
 
 import React, { useState } from 'react'
 
-import TabContents from './tab-contents'
-import TableEvent from './table-event'
+import Produk from './produk'
+import Alokasi from './alokasi'
+import Harga from './harga'
+
+import Provinsi from './provinsi'
+import Kabupaten from './kabupaten'
+import Kecamatan from './kecamatan'
+import Gudang from './gudang'
+import Distributor from './distributor'
+import Kios from './kios'
+
+import Mapping from './mapping'
+import Report from './report'
+import Petugas from './petugas'
+
+import MenuBar from './menu-bar'
+
+import {
+  ArrowLeftIcon
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 type Props = {}
 
-function ComponentMaster({}: Props) {
-  const [dataEvent, setDataEvent] = useState<any[]>([])
+function Index({}: Props) {
+  const [showing, setShowing] = useState<any>('')
 
-  const handleDataEvent = (value: any) => {
-    setDataEvent(value)
+  const handleShowing = (value: any) => {
+    setShowing(value)
   }
 
+  const componentMapping: { [key: string]: React.ReactNode } = {
+    Produk: <Produk />,
+    Alokasi: <Alokasi />,
+    Harga: <Harga />,
+    Provinsi: <Provinsi />,
+    Kabupaten: <Kabupaten />,
+    Kecamatan: <Kecamatan />,
+    Gudang: <Gudang />,
+    Distributor: <Distributor />,
+    Kios: <Kios />,
+    Mapping: <Mapping />,
+    Report: <Report />,
+    Petugas: <Petugas />,
+  };
+
   return (
-    <div className='grid grid-cols-1 w-full gap-4'>
-      <TabContents handle={handleDataEvent} />
-      <TableEvent data={dataEvent} />
+    <div className='w-full h-full flex flex-col gap-4'>
+      {
+        showing ? (
+          <Button 
+            variant={'outline'} 
+            size={'icon'}
+            onClick={() => setShowing('')}
+          >
+            <ArrowLeftIcon size={24} />
+          </Button>
+        ) : (
+          <MenuBar handle={handleShowing} />
+        )
+      }
+      
+      {showing && componentMapping[showing]}
     </div>
   )
 }
 
-export default ComponentMaster
+export default Index

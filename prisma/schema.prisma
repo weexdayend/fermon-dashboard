@@ -134,6 +134,7 @@ model datawarehouse_f5 {
   nama_provinsi    String?
   kode_kab_kota    String?
   nama_kab_kota    String?
+  tanggal          BigInt?
   bulan            BigInt?
   tahun            BigInt?
   status           String?   @map("_status")
@@ -165,6 +166,7 @@ model datawarehouse_f6 {
   nama_kab_kota    String?
   kode_kecamatan   String?
   nama_kecamatan   String?
+  tanggal          BigInt?
   bulan            BigInt?
   tahun            BigInt?
   kode_pengecer    String?
@@ -429,13 +431,13 @@ model tbl_user {
   created_at   DateTime
   updated_at   DateTime?
   deleted_at   DateTime?
-  email        String?
+  email        String         @unique
   hashed       String?
   image        String?
   role         String?
-  name         String?        @db.VarChar
+  name         String?        
   status_user  Boolean?
   tbl_produsen tbl_produsen[]
 
-  @@unique([id])
+  @@unique([id, email])
 }

@@ -30,18 +30,6 @@ export const sideLinks = [
     desc: "Master data is the data that is used to build the dashboard, and fermon-app."
   },
   {
-    imgURL: SatelliteIcon,
-    route: "/wilayah",
-    label: "Wilayah",
-    desc: "Wilayah is the data for Provinsi, Kota/Kabupaten and Kecamatan."
-  },
-  {
-    imgURL: WarehouseIcon,
-    route: "/mitra",
-    label: "Mitra",
-    desc: "Mitra is the data for Gudang Lini III, Distributor, Kios and Petani."
-  },
-  {
     imgURL: TicketIcon,
     route: "/laporan",
     label: "Laporan",
@@ -53,10 +41,4 @@ export const sideLinks = [
     label: "User",
     desc: "In this page you can manage your user account, from admin till pic."
   },
-  {
-    imgURL: User2Icon,
-    route: "/profile",
-    label: "Profile",
-    desc: "Here is your profile page, you can update your profile here."
-  }
 ];

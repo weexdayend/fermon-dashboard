@@ -1,24 +1,40 @@
-import {
-  getServerSession,
-  type NextAuthOptions,
-} from "next-auth";
+import { Account, getServerSession } from "next-auth";
+import { NextAuthOptions } from "next-auth";
+
 import Credentials from "next-auth/providers/credentials";
+
 import { userService } from "./services/user";
+import { JWT } from "next-auth/jwt";
+
+interface Profile {
+  id: string;
+  name: string;
+  email: string;
+  sub: string;
+  role: string;
+}
 
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, account, profile, user }) { 
-      if(account && account.type === "credentials") {
+    async signIn({ user }) {
+      if (user) return true;
+
+      return false;
+    },
+    async jwt({ token, account, user }: any) {
+      if (account && account.type === "credentials") {
         token.userId = account.providerAccountId;
+        token.role = user.role
       }
       return token;
     },
-    async session({ session, token }) { 
-      if (session && token && session.user && session.user.id) {
+    async session({ session, token }: any) {
+      if (session && token && session.user && token.userId && token.role) {
         session.user.id = token.userId;
+        session.user.role = token.role;
       }
       return session;
     },
@@ -39,7 +55,6 @@ export const authOptions: NextAuthOptions = {
           username: string
           password: string
         };
-
         return userService.authenticate(username, password);
       }
     })

@@ -6,13 +6,12 @@ import NextTopLoader from 'nextjs-toploader';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
-import { ThemeProvider } from "@/providers/theme";
 import { Providers } from "@/providers/session";
 import { getServerAuthSession } from '@/servers/auth'
+import { Toaster } from "@/components/ui/toaster"
 
 import LeftSidebar from "@/components/shared/sidebar";
 import Topbar from "@/components/shared/topbar";
-import PageTitle from "@/components/shared/page-title";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -44,6 +43,7 @@ export default async function RootLayout({
             </div>
           </section>
         </main>
+        <Toaster />
       </body>
     </html>
   );

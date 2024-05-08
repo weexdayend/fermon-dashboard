@@ -1,15 +1,12 @@
 import React from 'react'
 
-import { getServerAuthSession } from '@/servers/auth'
-import UserInfo from '@/components/pages/home/user-info'
+import Index from '@/components/pages/home'
 
-const Home = async () => {  
-  const authSession = await getServerAuthSession()
+const Home = async () => {
 
   return (
-    <div>
-      <pre>{ authSession && <UserInfo user={authSession.user} /> }</pre>
-      
+    <div className='w-full h-full flex flex-col gap-4'>
+      <Index />
     </div>
   )
 }
