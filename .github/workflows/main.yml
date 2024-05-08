@@ -34,10 +34,10 @@ jobs:
     - name: SSH and deploy to VPS
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        password: ${{ secrets.VPS_PASSWORD }}
-        port: ${{ secrets.VPS_PORT }}
+        host: 91.108.110.175
+        username: root
+        password: $4k4Admin
+        port: 22
         script: |
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fermon-admin:latest
 
