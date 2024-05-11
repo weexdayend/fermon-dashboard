@@ -55,5 +55,5 @@ jobs:
             -e MAP_TILER=${{ secrets.MAP_TILER }} \
             -e NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
             -e NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }} \
-            --memory=1g --memory-swap=1g --cpus=0.5 \
+            --memory=2g --memory-swap=6g --cpus=0.5 \
             ${{ secrets.DOCKERHUB_USERNAME }}/fermon-admin:latest
