@@ -168,9 +168,33 @@ function ListApp({}: Props) {
     {
       accessorKey: "app_status",
       header: "Status Code",
-      cell: ({ row }) => (
-        <div className="text-sm">{row.getValue("app_status")}</div>
-      ),
+      cell: ({ row }) => {
+        const app = row.original
+
+        return(
+          <div 
+            className={`w-fit flex flex-row items-center gap-2 text-sm ${
+              app.app_status === '200' ? 'text-green-500' : 'text-red-500'
+            }`}
+          >
+            {row.getValue("app_status")}
+            {
+              app.app_status !== '200' && (
+                <Link
+                  href={`https://wa.me/+6285219530300?text=halo admin, aplikasi ${app.app_name} tidak bisa di akses`}
+                >
+                  <Button
+                    variant={'ghost'}
+                    className='w-full'
+                  >
+                    Lapor Admin
+                  </Button>
+                </Link>
+              )
+            }
+          </div>
+        )
+      },
     },
     {
       accessorKey: "time_taken",
