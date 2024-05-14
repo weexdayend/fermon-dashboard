@@ -1,79 +1,40 @@
 'use client'
 
 import axios, { AxiosRequestConfig } from 'axios'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 
 import { Spinner } from '@/components/ui/spinner'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   Card,
   CardContent,
   CardHeader,
 } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  Row,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 
 import {
   DatabaseIcon,
-  MoreHorizontal,
-  PlusCircleIcon,
   HardDriveDownloadIcon,
   DownloadCloudIcon,
   ArrowBigRightDashIcon,
@@ -82,6 +43,10 @@ import {
   LucideTrash2,
   FileCheck2Icon,
   XIcon,
+  CheckCircle2Icon,
+  XCircleIcon,
+  PenSquareIcon,
+  CheckCircle
 } from "lucide-react"
 
 import * as XLSX from 'xlsx';
@@ -100,6 +65,7 @@ type UserListProps = {
   long: string
   lat: string
   tahun: string
+  file: []
 }
 
 const exampelData = [
@@ -124,18 +90,119 @@ function ListDistributor({ eventMessage, eventSocket }: Props) {
     setOpenImport(!openImport)
   }
 
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = useState({})
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10;
 
-  const [pagination, setPagination] = useState({
-    pageIndex: 0, //initial page index
-    pageSize: 12, //default page size
-  });
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredData = searchTerm !== '' ? data.filter(item =>
+    item.kode_distributor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.nama_distributor.toLowerCase().includes(searchTerm.toLowerCase())
+  ) : data;
+
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  
+  const [kategoriPreview, setKategoriPreview] = useState<string>('')
+  const [indexPreview, setIndexPreview] = useState<number | null>(null)
+  const [pdfData, setPdfData] = useState<any>(null)
+
+  const handleSelectPreviewFile = async (kategori: string, index: number, url: string) => {
+    setKategoriPreview('')
+    setIndexPreview(null)
+    setPdfData(null)
+    try {
+      setKategoriPreview(kategori)
+      setIndexPreview(index)
+      fetch(url)
+        .then(response => response.blob())
+        .then(data => setPdfData(data))
+        .catch(error => console.error('Error fetching PDF file:', error));
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const [selectedKategoriFile, setSelectedKategoriFile] = useState<File | null>(null);
+
+  const handleKategoriFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setSelectedKategoriFile(file);
+    }
+  };
+
+  const handleUploadFile = async (kategori: string, kode: string) => {
+    try {
+      if (!selectedKategoriFile) {
+        throw new Error("No file selected");
+      }
+
+      const formData = new FormData();
+      formData.append('file', selectedKategoriFile);
+      formData.append('kode', kode);
+      formData.append('tahun', '2024');
+      formData.append('name_file', selectedKategoriFile.name);
+      formData.append('jenis_file', kategori);
+      formData.append('keterangan', 'Gudang');
+  
+      const response = await axios.post('https://api.greatjbb.com/file', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      console.log('File uploaded successfully:', response.data);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    } finally {
+      fetchData(database)
+    }
+  };
+
+  const [editIndex, setEditIndex] = useState<number | null>(null)
+  const [editData, setEditData] = useState<boolean>(false)
+
+  const [idDistributor, setIdDistributor] = useState<string>('')
+  const [kodeDistributor, setKodeDistributor] = useState<string>('')
+  const [namaDistributor, setNamaDistributor] = useState<string>('')
+  const [alamatDistributor, setAlamatDistributor] = useState<string>('')
+  const [longitudeDistributor, setLongitudeDistributor] = useState<string>('')
+  const [lattitudeDistributor, setLattitudeDistributor] = useState<string>('')
+
+  const handleEditClick = (index: number, data: UserListProps) => {
+    setEditIndex(index)
+    setEditData(true)
+
+    setIdDistributor(data.id)
+    setKodeDistributor(data.kode_distributor)
+    setNamaDistributor(data.nama_distributor)
+    setAlamatDistributor(data.alamat)
+    setLongitudeDistributor(data.long)
+    setLattitudeDistributor(data.lat)
+  };
+
+  const handleSubmitEdit = async () => {
+    setLoader(true)
+    try {
+      await axios.put('https://api.greatjbb.com/distributor', {
+        id: idDistributor,
+        kode: kodeDistributor,
+        nama_gudang: namaDistributor,
+        alamat: alamatDistributor,
+        long: longitudeDistributor,
+        lat: lattitudeDistributor,
+      });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoader(false)
+      fetchData(database)
+    }
+  }
 
   const fetchData = async (database: string) => {
     setData([])
@@ -153,103 +220,6 @@ function ListDistributor({ eventMessage, eventSocket }: Props) {
       setLoader(false)
     }
   };
-
-  const columns: ColumnDef<UserListProps>[] = [
-    {
-      accessorKey: "kode_distributor",
-      header: "Kode",
-      cell: ({ row }) => {
-        return (
-          <div className="text-sm">{row.getValue("kode_distributor")}</div>
-        )
-      },
-    },
-    {
-      accessorKey: "nama_distributor",
-      header: "Nama Distributor",
-      cell: ({ row }) => (
-        <div className="text-sm">{row.getValue("nama_distributor")}</div>
-      ),
-    },
-    {
-      accessorKey: "alamat",
-      header: "Alamat",
-      cell: ({ row }) => (
-        <div className="text-sm">{row.getValue("alamat")}</div>
-      ),
-    },
-    {
-      accessorKey: "long",
-      header: "Longitude",
-      cell: ({ row }) => (
-        <div className="text-sm">{row.getValue("long")}</div>
-      ),
-    },
-    {
-      accessorKey: "lat",
-      header: "Lattitude",
-      cell: ({ row }) => (
-        <div className="text-sm">{row.getValue("lat")}</div>
-      ),
-    },
-    {
-      accessorKey: "tahun",
-      header: "Tahun",
-      cell: ({ row }) => (
-        <div className="text-sm">{row.getValue("tahun")}</div>
-      ),
-    },
-    // {
-    //   id: "actions",
-    //   enableHiding: false,
-    //   cell: ({ row }) => {
-    //     const user = row.original
-   
-    //     return (
-    //       <DropdownMenu>
-    //         <DropdownMenuTrigger asChild>
-    //           <Button variant="ghost" className="h-8 w-8 p-0">
-    //             <span className="sr-only">Open menu</span>
-    //             <MoreHorizontal className="h-4 w-4" />
-    //           </Button>
-    //         </DropdownMenuTrigger>
-    //         <DropdownMenuContent align="end">
-    //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-    //           <DropdownMenuItem>
-    //             <Button 
-    //               variant="ghost" 
-    //               className='w-full'
-    //             >
-    //               Edit Alokasi
-    //             </Button>
-    //           </DropdownMenuItem>
-    //         </DropdownMenuContent>
-    //       </DropdownMenu>
-    //     )
-    //   },
-    // },
-  ]
-
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-      pagination
-    },
-  })
 
   const resetDatabase = () => {
     setData([])
@@ -541,105 +511,283 @@ function ListDistributor({ eventMessage, eventSocket }: Props) {
               List Distributor
             </CardHeader>
             <CardContent className="space-y-2 px-6 py-6">
-              <div className="w-full pt-6">
-                <div className="flex flex-row justify-between items-center py-4">
-                  <div className='flex flex-row gap-2 items-center'>
-                    <Input
-                      placeholder="Filter nama distributor..."
-                      value={(table.getColumn("nama_distributor")?.getFilterValue() as string) ?? ""}
-                      onChange={(event) =>
-                        table.getColumn("nama_distributor")?.setFilterValue(event.target.value)
-                      }
-                      className="max-w-sm"
-                    />
-                  </div>
-                  <div className='flex flex=row gap-4'>
-                    {/* <Button 
-                      variant="outline"
-                      className='flex flex-row items-center gap-1.5'
-                    >
-                      <PlusCircleIcon size={16} />
-                      Add Distributor
-                    </Button> */}
-                  </div>
-                </div>
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                          {headerGroup.headers.map((header) => {
-                            return (
-                              <TableHead key={header.id}>
-                                {header.isPlaceholder
-                                  ? null
-                                  : flexRender(
-                                      header.column.columnDef.header,
-                                      header.getContext()
-                                    )}
-                              </TableHead>
+            <div className="w-full pt-6">
+                {
+                  data.length > 0 && (
+                    <div className="flex flex-row justify-between items-center py-4">
+                      <div className='flex flex-row gap-2 items-center'>
+                        <Input
+                          placeholder="Cari nama atau kode gudang..."
+                          className="max-w-sm"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  )
+                }
+                <div className="rounded-md">
+                  <div className='flex flex-col w-full gap-4'>
+                  {
+                    data.length === 0 && (
+                      <div className='flex flex-col px-4 py-4 border rounded-md text-center'>
+                        <h1>No result data here.</h1>
+                      </div>
+                    )
+                  }
+                  {
+                    data && currentItems.map((item: UserListProps, index: number) => (
+                      <div key={index+item.kode_distributor} className='flex flex-col px-4 py-4 border rounded-md'>
+                        <div className='ml-auto'>
+                          {
+                            editIndex === index && editData ? (
+                              <div className='flex flex-row gap-1 items-center'>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant={'ghost'}
+                                      size={'icon'}
+                                      className='text-red-600'
+                                    >
+                                      <XCircleIcon size={16} />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This action will not save your edited data, and not will be saved into our databases.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => {
+                                          setEditIndex(index === editIndex ? null : index)
+                                          setEditData(false)
+                                        }}
+                                      >
+                                        Continue
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant={'ghost'}
+                                      size={'icon'}
+                                      className={'text-green-600'}
+                                    >
+                                      <CheckCircle size={16} />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This action will not save your edited data, and not will be saved into our databases.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => {
+                                          handleSubmitEdit()
+                                          setEditIndex(index === editIndex ? null : index)
+                                          setEditData(false)
+                                        }}
+                                      >
+                                        Continue
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            ) : (
+                              <Button
+                                variant={'ghost'}
+                                size={'icon'}
+                                onClick={() => handleEditClick(index, item)}
+                              >
+                                <PenSquareIcon size={16} />
+                              </Button>
                             )
-                          })}
-                        </TableRow>
-                      ))}
-                    </TableHeader>
-                    <TableBody>
-                      {table.getRowModel().rows?.length ? (
-                        <>
-                        {[...Array(12)].map((_, index) => {
-                          const row = table.getRowModel().rows[index];
-                          return (
-                            <TableRow
-                              key={index}
-                              data-state={row && row.getIsSelected() && "selected"}
-                            >
-                              {row && row.getVisibleCells().map((cell, cellIndex) => (
-                                <TableCell key={cellIndex}>
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext()
-                                  )}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          );
-                        })}
-                        </>
-                      ) : (
-                        <TableRow>
-                          <TableCell
-                            colSpan={columns.length}
-                            className="h-24 text-center"
-                          >
-                            No results.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
+                          }
+                        </div>
+                        <div className='grid grid-cols-4 gap-4 w-full py-4 px-4'>
+                        {
+                          editIndex === index ? 
+                          (
+                            <>
+                              <div className='flex flex-col w-full gap-4'>
+                                <div className='flex flex-col gap-1'>
+                                  <Label htmlFor='kode_gudang'>Kode Distributor</Label>
+                                  <Input id='kode_gudang' value={kodeDistributor} onChange={(e) => setKodeDistributor(e.target.value)} />
+                                </div>
+                                <div className='flex flex-col gap-1'>
+                                  <Label htmlFor='nama_gudang'>Nama Distributor</Label>
+                                  <Input id='nama_gudang' value={namaDistributor} onChange={(e) => setNamaDistributor(e.target.value)} />
+                                </div>
+                                <div className='flex flex-col gap-1'>
+                                  <Label htmlFor='alamat_gudang'>Alamat Distributor</Label>
+                                  <Input id='alamat_gudang' value={alamatDistributor} onChange={(e) => setAlamatDistributor(e.target.value)} />
+                                </div>
+                              </div>
+                              <div className='flex flex-col w-full gap-4'>
+                                <div className='flex flex-col gap-1'>
+                                  <Label htmlFor='long_gudang'>Longitude</Label>
+                                  <Input id='long_gudang' value={longitudeDistributor} onChange={(e) => setLongitudeDistributor(e.target.value)} />
+                                </div>
+                                <div className='flex flex-col gap-1'>
+                                  <Label htmlFor='lat_gudang'>Lattitude</Label>
+                                  <Input id='lat_gudang' value={lattitudeDistributor} onChange={(e) => setLattitudeDistributor(e.target.value)} />
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className='flex flex-col w-full'>
+                                <h1 className='text-xs opacity-70'>{item.kode_distributor}</h1>
+                                <h1 className='text-sm'>{item.nama_distributor}</h1>
+                              </div>
+                              <div className='flex flex-col w-full'>
+                                <h1 className='text-sm'>{item.alamat}</h1>
+                                <h1 className='text-xs opacity-70'>long {item.long}</h1>
+                                <h1 className='text-xs opacity-70'>lat {item.lat}</h1>
+                              </div>
+
+                              <div className='w-full col-span-4 h-0.5 rounded-full bg-gray-100 my-2' />
+
+                              <div className='col-span-4 flex flex-row w-full items-center gap-4'>
+                                {
+                                  item.file
+                                  .map((file: any, idxFile: number) => (
+                                    <>
+                                      {
+                                        file.uri === null ? (
+                                          <Dialog key={idxFile}>
+                                            <DialogTrigger asChild>
+                                              <Button variant="outline" className='flex flex-row gap-1 w-fit py-1 px-3 rounded-full border-red-600 border'>
+                                                <XCircleIcon size={16} className='text-red-600' />
+                                                <h1 className='text-xs opacity-70 capitalize'>{file.kategori}</h1>
+                                              </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px]">
+                                              <DialogHeader>
+                                                <DialogTitle>Upload File Kedistributoran</DialogTitle>
+                                              </DialogHeader>
+                                              <div className="grid gap-4 py-4">
+                                                <Input type='file' accept='pdf' className="col-span-3" onChange={handleKategoriFile} />
+                                              </div>
+                                              <DialogFooter>
+                                                <Button onClick={() => handleUploadFile(file.kategori, item.kode_distributor)} type="submit">Upload file</Button>
+                                              </DialogFooter>
+                                            </DialogContent>
+                                          </Dialog>
+                                        ) : (
+                                          <Button
+                                            key={idxFile}
+                                            variant={'ghost'}
+                                            className={`flex flex-row gap-1 w-fit py-1 px-3 rounded-full ${indexPreview === index && file.kategori === kategoriPreview ? 'bg-green-600 text-white' : ' border-green-600 border'}`}
+                                            onClick={() => handleSelectPreviewFile(file.kategori ,index, `https://api.greatjbb.com/file${file.uri}`)}
+                                          >
+                                            <CheckCircle2Icon size={16} />
+                                            <h1 className='text-xs opacity-70 capitalize'>{file.kategori}</h1>
+                                          </Button>
+                                        ) 
+                                      }
+                                    </>
+                                  ))
+                                }
+                                {
+                                  indexPreview === index && pdfData !== null && (
+                                    <Button
+                                      variant={'ghost'}
+                                      className='w-fit flex flex-row gap-1 ml-auto rounded-full'
+                                      onClick={() => {
+                                        setKategoriPreview('')
+                                        setIndexPreview(null)
+                                        setPdfData(null)
+                                      }}
+                                    >
+                                      <XCircleIcon size={16} />
+                                      Close Preview
+                                    </Button>
+                                  )
+                                }
+                              </div>
+                              <div className='w-full col-span-4'>
+                                {
+                                  indexPreview === index && pdfData !== null && (
+                                    <object data={URL.createObjectURL(pdfData)} type="application/pdf" width="100%" height="600px" className='rounded-lg'>
+                                      <p>File preview not available</p>
+                                    </object>
+                                  )
+                                }
+                              </div>
+                            </>
+                          )
+                        }
+                      </div>
+                    </div>
+                    ))
+                  }
+                  </div>
                 </div>
                 <div className="flex items-center justify-end space-x-2 py-4">
-                  <div className="flex flex-row items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => table.previousPage()}
-                      disabled={!table.getCanPreviousPage()}
-                    >
-                      Previous
-                    </Button>
-                    <div className='flex flex-row items-center'>
-                      <p className='text-xs'>{pagination.pageIndex + 1} - {table.getPageCount()}</p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => table.nextPage()}
-                      disabled={!table.getCanNextPage()}
-                    >
-                      Next
-                    </Button>
-                  </div>
+                  {
+                    data.length > 0 && (
+                      <div className="flex flex-row items-center space-x-2">
+                        <Button
+                          className={`px-4 py-2 mx-1 ${currentPage === 1 ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-blue-500 text-white'}`}
+                          onClick={() => paginate(currentPage - 1)}
+                          disabled={currentPage === 1}
+                        >
+                          Previous
+                        </Button>
+                        {Array.from(Array(Math.ceil(filteredData.length / itemsPerPage)).keys()).map((pageNumber, index, array) => {
+                          const page = pageNumber + 1;
+                          const isCurrentPage = currentPage === page;
+                          // Display only the first, last, and pages around the current page
+                          if (
+                            page === 1 ||
+                            page === currentPage ||
+                            page === currentPage - 1 ||
+                            page === currentPage + 1 ||
+                            page === Math.ceil(filteredData.length / itemsPerPage)
+                          ) {
+                            return (
+                              <Button
+                                key={pageNumber}
+                                className={`px-4 py-2 mx-1 ${isCurrentPage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'}`}
+                                onClick={() => paginate(page)}
+                              >
+                                {page}
+                              </Button>
+                            );
+                          }
+                          // Render the ellipsis button if there's a gap between page numbers
+                          if (array[index - 1] !== pageNumber - 1) {
+                            return (
+                              <span key={`ellipsis-${pageNumber}`} className="mx-1">
+                                ...
+                              </span>
+                            );
+                          }
+                          // If the page is not displayed and there's no gap, return null
+                          return null;
+                        })}
+                        <Button
+                          className={`px-4 py-2 mx-1 ${currentPage === Math.ceil(filteredData.length / itemsPerPage) ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-blue-500 text-white'}`}
+                          onClick={() => paginate(currentPage + 1)}
+                          disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)}
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    )
+                  }
                 </div>
               </div>
             </CardContent>

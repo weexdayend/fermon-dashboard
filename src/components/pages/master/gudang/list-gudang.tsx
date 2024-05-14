@@ -1,15 +1,12 @@
 'use client'
 
 import axios, { AxiosRequestConfig } from 'axios'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 
 import { Spinner } from '@/components/ui/spinner'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
 
 import {
   AlertDialog,
@@ -25,7 +22,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -36,64 +32,9 @@ import {
   CardContent,
   CardHeader,
 } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  Row,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 
 import {
   DatabaseIcon,
-  MoreHorizontal,
-  PlusCircleIcon,
   HardDriveDownloadIcon,
   DownloadCloudIcon,
   ArrowBigRightDashIcon,
@@ -110,7 +51,7 @@ import {
 
 import * as XLSX from 'xlsx';
 import TableEvent from '../report/table-event'
-import Link from 'next/link'
+import Image from 'next/legacy/image'
 
 type Props = {
   eventSocket: []
@@ -626,6 +567,19 @@ function ListGudang({ eventMessage, eventSocket }: Props) {
                 }
                 <div className="rounded-md">
                   <div className='flex flex-col w-full gap-4'>
+                  {
+                    data.length === 0 && (
+                      <div className='flex flex-col px-4 py-4 border rounded-md text-center items-center justify-center'>
+                        <Image
+                          src='/assets/image/404-not-found-png'
+                          alt='not-found'
+                          width={120}
+                          height={120}
+                        />
+                        <h1>No result data here.</h1>
+                      </div>
+                    )
+                  }
                   {
                     data && currentItems.map((item: UserListProps, index: number) => (
                       <div key={index+item.kode_gudang} className='flex flex-col px-4 py-4 border rounded-md'>

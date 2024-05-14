@@ -1,92 +1,52 @@
 'use client'
 
 import axios, { AxiosRequestConfig } from 'axios'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useState, useRef, useEffect, Fragment } from 'react'
+
+import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, Transition } from '@headlessui/react'
+
+import { cn } from '@/libs/utils'
 
 import { Spinner } from '@/components/ui/spinner'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Badge } from '@/components/ui/badge'
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import {
   Card,
   CardContent,
   CardHeader,
 } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  Row,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 
 import {
-  DatabaseIcon,
-  MoreHorizontal,
-  PlusCircleIcon,
   HardDriveDownloadIcon,
-  DownloadCloudIcon,
   ArrowBigRightDashIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   LucideTrash2,
   FileCheck2Icon,
-  XIcon,
+  Trash2Icon,
+  XCircleIcon,
+  PenSquareIcon,
+  CheckCircle,
+  CheckIcon
 } from "lucide-react"
 
 import * as XLSX from 'xlsx';
 import TableEvent from '../report/table-event'
-import FormPetugas from './form-petugas'
+import Image from 'next/legacy/image'
 
 type Props = {
   eventSocket: []
@@ -101,6 +61,7 @@ type UserListProps = {
   contact_wa: string
   jabatan: string
   wilker: []
+  status_kepagawaian: string
   status_petugas: any
 }
 
@@ -111,12 +72,14 @@ const exampelData = [
     contact: '',
     contact_wa: '',
     jabatan: '',
+    status_kepegawaian: '',
+    email: ''
   }
 ]
 
 function ListPetugas({ eventMessage, eventSocket }: Props) {
   const [data, setData] = useState<any[]>([])
-  const [database, setDatabase] = useState('')
+  const [dataWilayah, setDataWilayah] = useState<any[]>([])
   const [loader, setLoader] = useState(false)
 
   const [dataPetugas, setDataPetugas] = useState({})
@@ -126,19 +89,114 @@ function ListPetugas({ eventMessage, eventSocket }: Props) {
   const handleOpenImport = () => {
     setOpenImport(!openImport)
   }
-  
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = useState({})
 
-  const [pagination, setPagination] = useState({
-    pageIndex: 0, //initial page index
-    pageSize: 12, //default page size
-  });
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10;
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  const [query, setQuery] = useState('')
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredData = searchTerm !== '' ? data.filter(item =>
+    item.kode_petugas.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.nama_petugas.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.wilker.some((wil: any) => 
+      wil.nama.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  ) : data;
+
+  const filteredWilayah = 
+    query === ''
+      ? dataWilayah
+      : dataWilayah.filter((airport: any) => {
+            const nameMatch = airport.nama
+              .toLowerCase()
+              .replace(/\s+/g, '')
+              .includes(query.toLowerCase().replace(/\s+/g, ''));
+            
+            const kodeMatch = airport.kode
+              ?.toLowerCase()
+              .replace(/\s+/g, '')
+              .includes(query.toLowerCase().replace(/\s+/g, ''));
+            
+            return nameMatch || kodeMatch;
+          });
+
+
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  const [editIndex, setEditIndex] = useState<number | null>(null)
+  const [editData, setEditData] = useState<boolean>(false)
+
+  const [idPetugas, setIdPetugas] = useState<string>('')
+  const [kodePetugas, setKodePetugas] = useState<string>('')
+  const [namaPetugas, setNamaPetugas] = useState<string>('')
+  const [contactPetugas, setContactPetugas] = useState<string>('')
+  const [whatsappPetugas, setWhatsappPetugas] = useState<string>('')
+  const [jabatanPetugas, setJabatanPetugas] = useState<string>('')
+  const [wilkerPetugas, setWilkerPetugas] = useState([])
+  const [statusKepagawaian, setStatusKepagawaian] = useState<string>('')
+  const [statusPetugas, setStatusPetugas] = useState<string>('')
+
+  const handleEditClick = (index: number, data: UserListProps) => {
+    setEditIndex(index)
+    setEditData(true)
+
+    setIdPetugas(data.id)
+    setKodePetugas(data.kode_petugas)
+    setNamaPetugas(data.nama_petugas)
+    setContactPetugas(data.contact)
+    setWhatsappPetugas(data.contact_wa)
+    setJabatanPetugas(data.jabatan)
+    setWilkerPetugas(data.wilker)
+    setStatusKepagawaian(data.status_kepagawaian)
+    setStatusPetugas(data.status_petugas)
+  };
+
+  const handleSubmitEdit = async () => {
+    setLoader(true)
+    try {
+      await axios.put('https://api.greatjbb.com/petugas', {
+        id: idPetugas,
+        kode_petugas: kodePetugas,
+        nama_petugas: namaPetugas,
+        contact: contactPetugas,
+        contact_wa: whatsappPetugas,
+        jabatan: jabatanPetugas,
+        wilker: wilkerPetugas,
+        status_kepagawaian: statusKepagawaian,
+        status_petugas: statusPetugas,
+      });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoader(false)
+      fetchData()
+    }
+  }
+
+  const [editWilkerPetugas, setEditWilkerPetugas] = useState([])
+
+  const handleEditWilkerPetugas = (selected: any) => {
+    setEditWilkerPetugas(selected)
+  }
+
+  const handleRemoveWilker = (selectedKode: string) => {
+    const index = wilkerPetugas.findIndex((wilker: any) => wilker.kode === selectedKode);
+
+    // If index is found, remove the object at that index
+    if (index !== -1) {
+      wilkerPetugas.splice(index, 1);
+    }
+
+    setWilkerPetugas(prevWilkerPetugas =>
+      prevWilkerPetugas.filter((wilker: any) => wilker.kode !== selectedKode)
+    );
+  }
 
   const fetchData = async () => {
     setData([])
@@ -156,125 +214,24 @@ function ListPetugas({ eventMessage, eventSocket }: Props) {
     }
   };
 
+  const fetchWilayah = async () => {
+    setDataWilayah([])
+    setLoader(true)
+    try {
+      const response = await axios.get('https://api.greatjbb.com/master/wilayah');
+
+      setDataWilayah(response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoader(false)
+    }
+  }
+
   useEffect(() => {
     fetchData()
-  }, [])
-
-  const columns: ColumnDef<UserListProps>[] = [
-    {
-      accessorKey: "kode_petugas",
-      header: "Kode",
-      cell: ({ row }) => {
-        return (
-          <div className="text-sm">{row.getValue("kode_petugas")}</div>
-        )
-      },
-    },
-    {
-      accessorKey: "nama_petugas",
-      header: "Nama Petugas",
-      cell: ({ row }) => (
-        <div className="text-sm">{row.getValue("nama_petugas")}</div>
-      ),
-    },
-    {
-      accessorKey: "contact",
-      header: "Kontak",
-      cell: ({ row }) => {
-        const item = row.original
-        
-        return (
-          <div className="flex flex-col gap-2">
-            <p className='text-xs'>{row.getValue("contact")}</p>
-            <p className='text-xs flex flex-row items-center gap-1'>{item.contact_wa} Whatsapp</p>
-          </div>
-        )
-      },
-    },
-    {
-      accessorKey: "jabatan",
-      header: "Jabatan",
-      cell: ({ row }) => (
-        <div className="text-sm">{row.getValue("jabatan")}</div>
-      ),
-    },
-    {
-      accessorKey: "wilker",
-      header: "Wilayah Kerja",
-      cell: ({ row }) => {
-        const item = row.original
-        return (
-          <>
-          {
-            item.wilker.map((wil: any, index: number) => (
-              <Badge key={index} className='m-1'>{wil.nama}</Badge>
-            ))
-          }
-          </>
-        )
-      },
-    },
-    {
-      accessorKey: "status_petugas",
-      header: "Status Petugas",
-      cell: ({ row }) => (
-        <div className={`px-2 py-1 border text-xs text-center rounded-md ${row.getValue("status_petugas") === true ? 'border-green-600 text-green-600' : 'border-red-600 text-red-600'}`}>{row.getValue("status_petugas") === true ? 'Active' : 'in-Active'}</div>
-      ),
-    },
-    // {
-    //   id: "actions",
-    //   enableHiding: false,
-    //   cell: ({ row }) => {
-    //     const user = row.original
-   
-    //     return (
-    //       <DropdownMenu>
-    //         <DropdownMenuTrigger asChild>
-    //           <Button variant="ghost" className="h-8 w-8 p-0">
-    //             <span className="sr-only">Open menu</span>
-    //             <MoreHorizontal className="h-4 w-4" />
-    //           </Button>
-    //         </DropdownMenuTrigger>
-    //         <DropdownMenuContent align="end">
-    //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-    //           <DropdownMenuItem>
-    //             <SheetTrigger asChild>
-    //               <Button 
-    //                 variant="ghost" 
-    //                 className='w-full'
-    //                 onClick={() => setDataPetugas(user)}
-    //               >
-    //                 Edit Alokasi
-    //               </Button>
-    //             </SheetTrigger>
-    //           </DropdownMenuItem>
-    //         </DropdownMenuContent>
-    //       </DropdownMenu>
-    //     )
-    //   },
-    // },
-  ]
-
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-      pagination
-    },
-  })
+    fetchWilayah()
+  }, [])  
 
   const exportToExcel = (value: string) => {
     const exampleKeys = ['id', 'kode_petugas', 'nama_petugas', 'contact', 'contact_wa', 'jabatan', 'status_petugas'];
@@ -391,7 +348,7 @@ function ListPetugas({ eventMessage, eventSocket }: Props) {
   }
 
   return (
-    <Sheet>
+    <>
       <div className='flex flex-row items-center gap-2 p-4 rounded-lg border-2'>
         <h1 className='text-sm font-normal opacity-80'>Insert or update data with bulk : </h1>
         <Button
@@ -426,14 +383,14 @@ function ListPetugas({ eventMessage, eventSocket }: Props) {
                       className='w-full flex flex-row items-center gap-1.5'
                       onClick={() => exportToExcel('update')}
                     >
-                      Format Update
+                      Update data
                     </Button>
                     <Button 
                       variant="outline"
                       className='w-full flex flex-row items-center gap-1.5'
                       onClick={() => exportToExcel('insert')}
                     >
-                      Format Insert
+                      Data baru
                     </Button>
                   </div>
                 </div>
@@ -531,112 +488,309 @@ function ListPetugas({ eventMessage, eventSocket }: Props) {
             </CardHeader>
             <CardContent className="space-y-2 px-6 py-6">
               <div className="w-full pt-6">
-                <div className="flex flex-row justify-between items-center py-4">
-                  <div className='flex flex-row gap-2 items-center'>
-                    <Input
-                      placeholder="Filter nama petugas..."
-                      value={(table.getColumn("nama_petugas")?.getFilterValue() as string) ?? ""}
-                      onChange={(event) =>
-                        table.getColumn("nama_petugas")?.setFilterValue(event.target.value)
-                      }
-                      className="max-w-sm"
-                    />
-                  </div>
-                  <div className='flex flex=row gap-4'>
-                    {/* <Button 
-                      variant="outline"
-                      className='flex flex-row items-center gap-1.5'
-                      onClick={() => setDataPetugas({})}
-                    >
-                      <PlusCircleIcon size={16} />
-                      Add Petugas
-                    </Button> */}
-                  </div>
-                </div>
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                          {headerGroup.headers.map((header) => {
-                            return (
-                              <TableHead key={header.id}>
-                                {header.isPlaceholder
-                                  ? null
-                                  : flexRender(
-                                      header.column.columnDef.header,
-                                      header.getContext()
-                                    )}
-                              </TableHead>
+                {
+                    data.length === 0 && (
+                      <div className='flex flex-col px-4 py-4 border rounded-md text-center items-center justify-center'>
+                        <h1>No result data here.</h1>
+                      </div>
+                    )
+                  }
+                {
+                  data.length > 0 && (
+                    <div className="flex flex-row justify-between items-center py-4">
+                      <div className='w-full flex flex-row gap-2 items-center'>
+                        <Input
+                          placeholder="Cari nama, kode petugas atau wilayah kerja..."
+                          className="max-w-sm"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  )
+                }
+                <div className="rounded-md">
+                  <div className='flex flex-col w-full gap-4'>
+                  {
+                    data && currentItems.map((item: UserListProps, index: number) => (
+                      <div key={index+item.kode_petugas} className='flex flex-col px-4 py-4 border rounded-md'>
+                        <div className='ml-auto'>
+                          {
+                            editIndex === index && editData ? (
+                              <div className='flex flex-row gap-1 items-center'>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant={'ghost'}
+                                      size={'icon'}
+                                      className='text-red-600'
+                                    >
+                                      <XCircleIcon size={16} />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This action will not save your edited data, and not will be saved into our databases.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => {
+                                          setEditIndex(index === editIndex ? null : index)
+                                          setEditData(false)
+                                          fetchData()
+                                        }}
+                                      >
+                                        Continue
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant={'ghost'}
+                                      size={'icon'}
+                                      className={'text-green-600'}
+                                    >
+                                      <CheckCircle size={16} />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This action will not save your edited data, and not will be saved into our databases.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => {
+                                          handleSubmitEdit()
+                                          setEditIndex(index === editIndex ? null : index)
+                                          setEditData(false)
+                                        }}
+                                      >
+                                        Continue
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            ) : (
+                              <Button
+                                variant={'ghost'}
+                                size={'icon'}
+                                onClick={() => handleEditClick(index, item)}
+                              >
+                                <PenSquareIcon size={16} />
+                              </Button>
                             )
-                          })}
-                        </TableRow>
-                      ))}
-                    </TableHeader>
-                    <TableBody>
-                      {table.getRowModel().rows?.length ? (
-                        <>
-                        {[...Array(12)].map((_, index) => {
-                          const row = table.getRowModel().rows[index];
-                          return (
-                            <TableRow
-                              key={index}
-                              data-state={row && row.getIsSelected() && "selected"}
-                            >
-                              {row && row.getVisibleCells().map((cell, cellIndex) => (
-                                <TableCell key={cellIndex}>
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext()
-                                  )}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          );
-                        })}
-                        </>
-                      ) : (
-                        <TableRow>
-                          <TableCell
-                            colSpan={columns.length}
-                            className="h-24 text-center"
-                          >
-                            No results.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
+                          }
+                        </div>
+                        <div className='grid grid-cols-4 gap-4 w-full py-4 px-4'>
+                        {
+                          editIndex === index ? 
+                          (
+                            <>
+                              <div className='flex flex-col w-full gap-4'>
+                                <div className='flex flex-col gap-1'>
+                                  <Label htmlFor='kode_petugas'>Kode Petugas</Label>
+                                  <Input id='kode_petugas' value={kodePetugas} onChange={(e) => setKodePetugas(e.target.value)} />
+                                </div>
+                                <div className='flex flex-col gap-1'>
+                                  <Label htmlFor='nama_petugas'>Nama Petugas</Label>
+                                  <Input id='nama_petugas' value={namaPetugas} onChange={(e) => setNamaPetugas(e.target.value)} />
+                                </div>
+                              </div>
+                              <div className='flex flex-col w-full gap-4'>
+                                <div className='flex flex-col gap-1'>
+                                  <Label htmlFor='contact_petugas'>Contact Petugas</Label>
+                                  <Input id='contact_petugas' value={contactPetugas} onChange={(e) => setContactPetugas(e.target.value)} />
+                                </div>
+                                <div className='flex flex-col gap-1'>
+                                  <Label htmlFor='whatsapp_petugas'>Whatsapp Petugas</Label>
+                                  <Input id='whatsapp_petugas' value={whatsappPetugas} onChange={(e) => setWhatsappPetugas(e.target.value)} />
+                                </div>
+                              </div>
+                              <div className='flex flex-col w-full gap-4'>
+                                <div className='flex flex-col gap-1'>
+                                  <Label htmlFor='jabatan_petugas'>Jabatan Petugas</Label>
+                                  <Input id='jabatan_petugas' value={jabatanPetugas} onChange={(e) => setJabatanPetugas(e.target.value)} />
+                                </div>
+                              </div>
+                              <div className='flex flex-col w-full gap-4'>
+                                <div className='flex flex-col gap-1'>
+                                  <Label htmlFor='status_kepegawaian'>Status Kepegawaian</Label>
+                                  <Input id='status_kepegawaian' value={statusKepagawaian} onChange={(e) => setStatusKepagawaian(e.target.value)} />
+                                </div>
+                              </div>
+                              
+                              <div className='w-full col-span-4 h-0.5 rounded-full bg-gray-100 my-2' />
+
+                              <div className='col-span-4 w-full flex flex-col gap-4'>
+                                <div className='flex flex-col gap-1'>
+                                  <h1 className='text-xs opacity-70'>Wilayah Kerja :</h1>
+                                  <div className='flex flex-row w-full items-center gap-2'>
+                                    {
+                                      wilkerPetugas.map((wil: any, wilIndex: number) => (
+                                        <div 
+                                          key={wilIndex}
+                                          className='w-fit flex flex-row items-center gap-1 px-2 py-1 rounded-full border'
+                                        >
+                                          <Trash2Icon onClick={() => handleRemoveWilker(wil.kode)} size={16} className='cursor-pointer text-red-600' />
+                                          <h1 className='text-xs w-full'>{wil.nama}</h1>
+                                        </div>
+                                      ))
+                                    }
+                                  </div>
+                                </div>
+                                <Combobox multiple value={wilkerPetugas} onChange={setWilkerPetugas} onClose={() => setQuery('')}>
+                                  <div className="relative">
+                                    <ComboboxInput
+                                      className={cn(
+                                        'w-full rounded-lg border bg-white py-1.5 pr-8 pl-3 text-sm/6 text-gray-600',
+                                        'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
+                                      )}
+                                      displayValue={(person: any) => person?.nama}
+                                      onChange={(event) => setQuery(event.target.value)}
+                                      placeholder='Cari provinsi, kota atau kabupaten...'
+                                    />
+                                  </div>
+                                  <Transition
+                                    leave="transition ease-in duration-100"
+                                    leaveFrom="opacity-100"
+                                    leaveTo="opacity-0"
+                                    afterLeave={() => setQuery('')}
+                                  >
+                                    <ComboboxOptions
+                                      anchor="bottom"
+                                      className="shadow-lg w-[var(--input-width)] rounded-xl border bg-white p-1 [--anchor-gap:var(--spacing-1)] empty:hidden"
+                                    >
+                                      {filteredWilayah.map((person, index) => (
+                                        <ComboboxOption
+                                          key={index+person.kode}
+                                          value={person}
+                                          className="group flex cursor-default items-center gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-white/10"
+                                          disabled={wilkerPetugas.some((selectedPerson: any) => selectedPerson.kode === person.kode)}
+                                        >
+                                          <CheckIcon className={wilkerPetugas.some((selectedPerson: any) => selectedPerson.kode === person.kode) ? "size-4 fill-white" : "invisible"} />
+                                          <div className={`text-sm/6 ${wilkerPetugas.some((selectedPerson: any) => selectedPerson.kode === person.kode) ? "text-gray-500" : "text-gray-800"}`}>{person.nama}</div>
+                                        </ComboboxOption>
+                                      ))}
+                                    </ComboboxOptions>
+                                  </Transition>
+                                </Combobox>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className='flex flex-col w-full'>
+                                <h1 className='text-sm'>{item.nama_petugas}</h1>
+                                <h1 className='text-xs opacity-70'>{item.jabatan}</h1>
+                              </div>
+                              <div className='flex flex-col w-full gap-1.5'>
+                                <div>
+                                  <h1 className='text-xs opacity-70'>Contact</h1>
+                                  <h1 className='text-sm'>{item.contact}</h1>
+                                </div>
+                                <div>
+                                  <h1 className='text-xs opacity-70'>Whatsapp</h1>
+                                  <h1 className='text-sm'>{item.contact_wa}</h1>
+                                </div>
+                              </div>
+                              <div className='flex flex-col w-full'>
+                                <h1 className='text-xs opacity-70'>Status Kepegawaian</h1>
+                                <h1 className='text-sm'>{item.status_kepagawaian}</h1>
+                              </div>
+
+                              <div className='w-full col-span-4 h-0.5 rounded-full bg-gray-100 my-2' />
+
+                              <div className='col-span-4 flex flex-col gap-1.5'>
+                                <h1 className='text-xs opacity-70'>Wilayah Kerja :</h1>
+                                <div className='flex flex-row w-full items-center gap-2'>
+                                  {
+                                    item && item.wilker.map((wil: any, wilIndex: number) => (
+                                      <Badge key={wilIndex}>
+                                        {wil.nama}
+                                      </Badge>
+                                    ))
+                                  }
+                                </div>
+                              </div>
+                            </>
+                          )
+                        }
+                      </div>
+                    </div>
+                    ))
+                  }
+                  </div>
                 </div>
                 <div className="flex items-center justify-end space-x-2 py-4">
-                  <div className="flex flex-row items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => table.previousPage()}
-                      disabled={!table.getCanPreviousPage()}
-                    >
-                      Previous
-                    </Button>
-                    <div className='flex flex-row items-center'>
-                      <p className='text-xs'>{pagination.pageIndex + 1} - {table.getPageCount()}</p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => table.nextPage()}
-                      disabled={!table.getCanNextPage()}
-                    >
-                      Next
-                    </Button>
-                  </div>
+                  {
+                    data.length > 0 && (
+                      <div className="flex flex-row items-center space-x-2">
+                        <Button
+                          className={`px-4 py-2 mx-1 ${currentPage === 1 ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-blue-500 text-white'}`}
+                          onClick={() => paginate(currentPage - 1)}
+                          disabled={currentPage === 1}
+                        >
+                          Previous
+                        </Button>
+                        {Array.from(Array(Math.ceil(filteredData.length / itemsPerPage)).keys()).map((pageNumber, index, array) => {
+                          const page = pageNumber + 1;
+                          const isCurrentPage = currentPage === page;
+                          // Display only the first, last, and pages around the current page
+                          if (
+                            page === 1 ||
+                            page === currentPage ||
+                            page === currentPage - 1 ||
+                            page === currentPage + 1 ||
+                            page === Math.ceil(filteredData.length / itemsPerPage)
+                          ) {
+                            return (
+                              <Button
+                                key={pageNumber}
+                                className={`px-4 py-2 mx-1 ${isCurrentPage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'}`}
+                                onClick={() => paginate(page)}
+                              >
+                                {page}
+                              </Button>
+                            );
+                          }
+                          // Render the ellipsis button if there's a gap between page numbers
+                          if (array[index - 1] !== pageNumber - 1) {
+                            return (
+                              <span key={`ellipsis-${pageNumber}`} className="mx-1">
+                                ...
+                              </span>
+                            );
+                          }
+                          // If the page is not displayed and there's no gap, return null
+                          return null;
+                        })}
+                        <Button
+                          className={`px-4 py-2 mx-1 ${currentPage === Math.ceil(filteredData.length / itemsPerPage) ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-blue-500 text-white'}`}
+                          onClick={() => paginate(currentPage + 1)}
+                          disabled={currentPage === Math.ceil(filteredData.length / itemsPerPage)}
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    )
+                  }
                 </div>
               </div>
             </CardContent>
           </Card>
         )
       }
-    </Sheet>
+    </>
   )
 }
 

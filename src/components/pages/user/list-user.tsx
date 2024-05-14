@@ -176,10 +176,9 @@ function ListUser({}: Props) {
       header: "Full Name",
       cell: ({ row }) => {
         const user = row.original
-        console.log(user)
 
         return (
-          <div className="text-sm">{row.getValue("name")} <Badge>{user.role}</Badge></div>
+          <div className="text-sm grid grid-cols-2 gap-4">{row.getValue("name")}<Badge className={`w-fit ${user.role ? 'bg-blue-500' : 'bg-gray-400'}`}>{user.role ? user.role : 'not-assign yet'}</Badge></div>
         )
       },
     },
