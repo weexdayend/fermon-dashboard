@@ -51,7 +51,6 @@ import {
 
 import * as XLSX from 'xlsx';
 import TableEvent from '../report/table-event'
-import Image from 'next/legacy/image'
 
 type Props = {
   eventSocket: []
@@ -570,12 +569,6 @@ function ListGudang({ eventMessage, eventSocket }: Props) {
                   {
                     data.length === 0 && (
                       <div className='flex flex-col px-4 py-4 border rounded-md text-center items-center justify-center'>
-                        <Image
-                          src='https://raw.githubusercontent.com/weexdayend/fermon-dashboard/main/public/assets/image/404-not-found.png'
-                          alt='not-found'
-                          width={120}
-                          height={120}
-                        />
                         <h1>No result data here.</h1>
                       </div>
                     )
