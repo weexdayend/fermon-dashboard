@@ -571,7 +571,7 @@ function ListGudang({ eventMessage, eventSocket }: Props) {
                     data.length === 0 && (
                       <div className='flex flex-col px-4 py-4 border rounded-md text-center items-center justify-center'>
                         <Image
-                          src='/assets/image/404-not-found-png'
+                          src='https://raw.githubusercontent.com/weexdayend/fermon-dashboard/main/public/assets/image/404-not-found.png'
                           alt='not-found'
                           width={120}
                           height={120}
