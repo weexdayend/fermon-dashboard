@@ -109,7 +109,7 @@ function TabMigration({ tabIdentifier, exampleData, migrationMessage, migrationS
         migrationMessage !== '' && migrationStatus !== '' ? (
           <Card className='border shadow-none'>
             <CardContent className="space-y-2 px-6 py-6 flex flex-col items-center justify-center">
-              <SimpleProgressBar progress={migrationProgress} message={migrationMessage} />
+              <h1 className='text-sm opacity-70'>{migrationMessage}</h1>
             </CardContent>
           </Card>
         ) : (
