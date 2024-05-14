@@ -158,7 +158,7 @@ function arrayToObjects(array: any[][], id: any): Array<ArrayElement> {
         toast({
           variant: "destructive",
           title: "Migration Error!",
-          description: "Migration process has been error.",
+          description: `Migration process has been error, ${value.message}`,
         })
       }
     }
