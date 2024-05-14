@@ -22,19 +22,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import SimpleProgressBar from '@/components/shared/progress'
 
 type Props = {
   tabIdentifier: any
   exampleData: any
   migrationMessage: any
   migrationStatus: any
+  migrationProgress: any
 }
 
 // const headers: string[] = [
 //   "kode_produsen", "nama_produsen", "no_f5", "kode_distributor", "nama_distributor", "kode_provinsi", "nama_provinsi", "kode_kab_kota", "nama_kab_kota", "bulan", "tahun", "status_f5", "kode_produk", "nama_produk", "stok_awal", "penebusan", "penyaluran", "stok_akhir", "keterangan"
 // ];
 
-function TabMigration({ tabIdentifier, exampleData, migrationMessage, migrationStatus }: Props) {
+function TabMigration({ tabIdentifier, exampleData, migrationMessage, migrationStatus, migrationProgress }: Props) {
   const [headers, setHeaders] = useState<string[]>([])
 
   useEffect(() => {
@@ -104,10 +106,10 @@ function TabMigration({ tabIdentifier, exampleData, migrationMessage, migrationS
   return (
     <div className="w-full h-fit">
       {
-        migrationMessage !== '' && migrationStatus !== null ? (
+        migrationMessage !== '' && migrationStatus !== '' ? (
           <Card className='border shadow-none'>
             <CardContent className="space-y-2 px-6 py-6 flex flex-col items-center justify-center">
-              <h1>{migrationMessage}</h1>
+              <SimpleProgressBar progress={migrationProgress} message={migrationMessage} />
             </CardContent>
           </Card>
         ) : (

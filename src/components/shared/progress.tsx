@@ -3,15 +3,22 @@ import prettyMS from "pretty-ms";
 const SimpleProgressBar = ({
   progress = 0,
   remaining = 0,
+  message = '',
 }: {
   progress?: number;
   remaining?: number;
+  message?: string;
 }) => {
   return (
     <>
       {!!remaining && (
         <div className="mb-1.5 text-sm text-gray-700">
           Remaining time: {prettyMS(remaining)}
+        </div>
+      )}
+      {!!message && (
+        <div className="mb-1.5 text-sm text-gray-700">
+          {message}
         </div>
       )}
       <div className="w-full py-1.5 h-6 relative rounded-full">

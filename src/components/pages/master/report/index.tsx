@@ -30,7 +30,8 @@ function Report({}: Props) {
   const [exampleData, setExampleData] = useState<any[]>([])
 
   const [migrationMessage, setMigrationMessage] = useState<string>('')
-  const [migrationStatus, setMigrationStatus] = useState<number | null>(null)
+  const [migrationStatus, setMigrationStatus] = useState<string>('')
+  const [migrationProgress, setMigrationProgress] = useState<number>(0)
 
 
 function arrayToObjects(array: any[][], id: any): Array<ArrayElement> {
@@ -132,8 +133,9 @@ function arrayToObjects(array: any[][], id: any): Array<ArrayElement> {
     function onMigrationProcess(value: any) {
       setMigrationStatus(value.status)
       setMigrationMessage(value.message)
+      setMigrationProgress(value.progress)
 
-      if (value.status === 0) {
+      if (value.status == 'completed') {
         clear()
         toast({
           variant: "default",
@@ -142,12 +144,21 @@ function arrayToObjects(array: any[][], id: any): Array<ArrayElement> {
         })
       }
 
-      if (value.status === 666) {
+      if (value.status == 'canceled') {
         clear()
         toast({
           variant: "destructive",
           title: "Migration Canceled!",
           description: "You has been canceled the process migration.",
+        })
+      }
+
+      if (value.status == 'error') {
+        clear()
+        toast({
+          variant: "destructive",
+          title: "Migration Error!",
+          description: "Migration process has been error.",
         })
       }
     }
@@ -160,7 +171,7 @@ function arrayToObjects(array: any[][], id: any): Array<ArrayElement> {
     
     socket.on("example data", onExampleData);
 
-    socket.on("migration process", onMigrationProcess);
+    socket.on("migration progress", onMigrationProcess);
 
 
     return () => {
@@ -172,7 +183,7 @@ function arrayToObjects(array: any[][], id: any): Array<ArrayElement> {
 
       socket.off("example data", onExampleData);
 
-      socket.on("migration process", onMigrationProcess);
+      socket.off("migration progress", onMigrationProcess);
     };
   }, []);
 
@@ -187,7 +198,7 @@ function arrayToObjects(array: any[][], id: any): Array<ArrayElement> {
     setImportStatus(null)
     setExampleData([])
     setMigrationMessage('')
-    setMigrationStatus(null)
+    setMigrationStatus('')
   }
 
   return (
@@ -205,6 +216,7 @@ function arrayToObjects(array: any[][], id: any): Array<ArrayElement> {
             exampleData={exampleData}
             migrationMessage={migrationMessage}
             migrationStatus={migrationStatus}
+            migrationProgress={migrationProgress}
           />
         )
       }
