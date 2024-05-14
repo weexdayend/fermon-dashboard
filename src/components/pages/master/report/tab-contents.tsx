@@ -173,7 +173,7 @@ function TabContents({ eventSocket, eventMessage, handleTabIdentifier }: Props) 
               </CardContent>
             )
           }
-          <CardFooter className='flex flex-col gap-4'>
+          <CardFooter className='flex flex-col gap-4 pt-6'>
             {
               uploaded && <SimpleProgressBar progress={progress} remaining={remaining} />
             }
@@ -245,7 +245,7 @@ function TabContents({ eventSocket, eventMessage, handleTabIdentifier }: Props) 
               </CardContent>
             )
           }
-          <CardFooter className='flex flex-col gap-4'>
+          <CardFooter className='flex flex-col gap-4 pt-6'>
             {
               uploaded && <SimpleProgressBar progress={progress} remaining={remaining} />
             }
