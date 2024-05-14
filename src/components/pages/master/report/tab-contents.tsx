@@ -188,59 +188,63 @@ function TabContents({ eventSocket, eventMessage, handleTabIdentifier }: Props) 
       </TabsContent>
       <TabsContent value="kios" className='pt-2'>
         <Card className='border shadow-none'>
-          <CardContent className="space-y-2 pt-6">
-            <div className="space-y-1 text-center">
-              <form
-                className={`w-full flex flex-col mb-6 mt-6 rounded-lg h-fit items-center justify-center`}
-              >
-                {/* this input element allows us to select files for upload. We make it hidden so we can activate it when the user clicks select files */}
-                <input
-                  placeholder="fileInput"
-                  className="hidden"
-                  ref={inputRef}
-                  type="file"
-                  id="file"
-                  accept=".csv"
-                  onChange={(e) => handleFileChange(e, 'f6')}
-                  multiple={false}
-                />
+          {
+            eventSocket.length > 0 ? (<></>) : (
+              <CardContent className="space-y-2 pt-6">
+                <div className="space-y-1 text-center">
+                  <form
+                    className={`w-full flex flex-col mb-6 mt-6 rounded-lg h-fit items-center justify-center`}
+                  >
+                    {/* this input element allows us to select files for upload. We make it hidden so we can activate it when the user clicks select files */}
+                    <input
+                      placeholder="fileInput"
+                      className="hidden"
+                      ref={inputRef}
+                      type="file"
+                      id="file"
+                      accept=".csv"
+                      onChange={(e) => handleFileChange(e, 'f6')}
+                      multiple={false}
+                    />
 
-                {
-                  !file && (
-                    <p className='flex flex-row gap-2'>
-                      <UploadCloudIcon className='w-6 h-6 opacity-70' />
-                      <span
-                        className="font-bold text-blue-600 cursor-pointer"
-                        onClick={openFileExplorer}
-                      >
-                        <u>Select files F6</u>
-                      </span>{" "}
-                      to upload
-                    </p>
-                  )
-                }
+                    {
+                      !file && (
+                        <p className='flex flex-row gap-2'>
+                          <UploadCloudIcon className='w-6 h-6 opacity-70' />
+                          <span
+                            className="font-bold text-blue-600 cursor-pointer"
+                            onClick={openFileExplorer}
+                          >
+                            <u>Select files F6</u>
+                          </span>{" "}
+                          to upload
+                        </p>
+                      )
+                    }
 
-                <div className="w-full flex flex-col items-center p-3">
-                  {file && (
-                    <div className="w-full flex flex-row items-center justify-between gap-4 p-6 rounded-lg bg-blue-100/50">
-                      <div className='flex flex-row gap-4 items-center'>
-                        <FileCheck2Icon className='w-6 h-6 opacity-70' />
-                        <div className='flex flex-col text-left'>
-                          <p className='text-sm opacity-80'>File Name: <span className='font-bold'>{file.name}</span></p>
-                          <p className='text-sm opacity-80'>File Size: <span className='font-bold'>{(file.size / (1024 * 1024)).toFixed(2)} MB</span></p>
+                    <div className="w-full flex flex-col items-center p-3">
+                      {file && (
+                        <div className="w-full flex flex-row items-center justify-between gap-4 p-6 rounded-lg bg-blue-100/50">
+                          <div className='flex flex-row gap-4 items-center'>
+                            <FileCheck2Icon className='w-6 h-6 opacity-70' />
+                            <div className='flex flex-col text-left'>
+                              <p className='text-sm opacity-80'>File Name: <span className='font-bold'>{file.name}</span></p>
+                              <p className='text-sm opacity-80'>File Size: <span className='font-bold'>{(file.size / (1024 * 1024)).toFixed(2)} MB</span></p>
+                            </div>
+                          </div>
+                          <LucideTrash2
+                            className="w-6 h-6 text-red-500 cursor-pointer"
+                            onClick={() => removeFile()}
+                          />
                         </div>
-                      </div>
-                      <LucideTrash2
-                        className="w-6 h-6 text-red-500 cursor-pointer"
-                        onClick={() => removeFile()}
-                      />
+                      )}
                     </div>
-                  )}
+                  </form>
+                  <p className='text-sm opacity-70'>Upload your file report f5 here, the file must <span className='font-bold underline'>csv</span> extension.</p>
                 </div>
-              </form>
-              <p className='text-sm opacity-70'>Upload your file report f5 here, the file must <span className='font-bold underline'>csv</span> extension.</p>
-            </div>
-          </CardContent>
+              </CardContent>
+            )
+          }
           <CardFooter className='flex flex-col gap-4'>
             {
               uploaded && <SimpleProgressBar progress={progress} remaining={remaining} />
