@@ -234,7 +234,7 @@ function ListPetugas({ eventMessage, eventSocket }: Props) {
   }, [])  
 
   const exportToExcel = (value: string) => {
-    const exampleKeys = ['id', 'kode_petugas', 'nama_petugas', 'contact', 'contact_wa', 'jabatan', 'status_petugas'];
+    const exampleKeys = ['id', 'kode_petugas', 'nama_petugas', 'contact', 'contact_wa', 'jabatan', 'status_kepagawaian', 'status_petugas'];
 
     let exampleDataFiltered
     let formatType
