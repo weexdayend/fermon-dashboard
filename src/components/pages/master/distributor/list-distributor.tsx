@@ -511,7 +511,7 @@ function ListDistributor({ eventMessage, eventSocket }: Props) {
               List Distributor
             </CardHeader>
             <CardContent className="space-y-2 px-6 py-6">
-            <div className="w-full pt-6">
+              <div className="w-full pt-6">
                 {
                   data.length > 0 && (
                     <div className="flex flex-row justify-between items-center py-4">
