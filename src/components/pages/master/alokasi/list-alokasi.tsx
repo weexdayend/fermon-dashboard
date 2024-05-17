@@ -103,9 +103,41 @@ function ListAlokasi({ eventSocket, eventMessage }: Props) {
   const filteredData = searchTerm !== '' ? data.filter((item: UserListProps) =>
     (item.kode?.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (item.nama_kategori?.toLowerCase().includes(searchTerm.toLowerCase()))
-) : data;
+  ) : data;
 
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredData
+    .slice()
+    .sort((a, b) => {
+      // Define a function to determine the sorting order based on product type
+      const compareProductType = (item: any) => {
+        if (item.produk === 'NPK') {
+          return -1; // NPK comes before UREA
+        } else if (item.produk === 'UREA') {
+          return 1; // UREA comes after NPK
+        }
+        return 0; // For any other product type
+      };
+
+      // Compare product type first
+      const productTypeComparison = compareProductType(a) - compareProductType(b);
+      if (productTypeComparison !== 0) {
+        return productTypeComparison;
+      }
+
+      // If product types are the same, sort by nama_kategori
+      const namaKategoriComparison = a.nama_kategori?.localeCompare(b.nama_kategori) || 0;
+      if (namaKategoriComparison !== 0) {
+        return namaKategoriComparison;
+      }
+
+      // If nama_kategori is the same, sort by bulan
+      // Convert bulan to numeric value for sorting
+      const bulanA = parseInt(a.bulan) || 0; // If bulan is not numeric, default to 0
+      const bulanB = parseInt(b.bulan) || 0; // If bulan is not numeric, default to 0
+      return bulanA - bulanB;
+    })
+    .slice(indexOfFirstItem, indexOfLastItem);
+
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 

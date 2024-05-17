@@ -93,7 +93,7 @@ function ListHarga({ eventMessage, eventSocket }: Props) {
   }
 
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 12;
+  const itemsPerPage = 24;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -103,9 +103,40 @@ function ListHarga({ eventMessage, eventSocket }: Props) {
   const filteredData = searchTerm !== '' ? data.filter((item: UserListProps) =>
     (item.kode?.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (item.nama_kategori?.toLowerCase().includes(searchTerm.toLowerCase()))
-) : data;
+  ) : data;
 
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredData
+    .slice()
+    .sort((a, b) => {
+      // Define a function to determine the sorting order based on product type
+      const compareProductType = (item: any) => {
+        if (item.produk === 'NPK') {
+          return -1; // NPK comes before UREA
+        } else if (item.produk === 'UREA') {
+          return 1; // UREA comes after NPK
+        }
+        return 0; // For any other product type
+      };
+
+      // Compare product type first
+      const productTypeComparison = compareProductType(a) - compareProductType(b);
+      if (productTypeComparison !== 0) {
+        return productTypeComparison;
+      }
+
+      // If product types are the same, sort by nama_kategori
+      const namaKategoriComparison = a.nama_kategori?.localeCompare(b.nama_kategori) || 0;
+      if (namaKategoriComparison !== 0) {
+        return namaKategoriComparison;
+      }
+
+      // If nama_kategori is the same, sort by bulan
+      // Convert bulan to numeric value for sorting
+      const bulanA = parseInt(a.bulan) || 0; // If bulan is not numeric, default to 0
+      const bulanB = parseInt(b.bulan) || 0; // If bulan is not numeric, default to 0
+      return bulanA - bulanB;
+    })
+    .slice(indexOfFirstItem, indexOfLastItem);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -467,10 +498,10 @@ function ListHarga({ eventMessage, eventSocket }: Props) {
               <div className="w-full pt-6">
                 {
                   data.length > 0 && (
-                    <div className="flex flex-row justify-between items-center py-4">
-                      <div className='flex flex-row gap-2 items-center'>
+                    <div className="w-full flex flex-row justify-between items-center py-4">
+                      <div className='w-full flex flex-row gap-2 items-center'>
                         <Input
-                          placeholder="Cari nama atau kode gudang..."
+                          placeholder="Cari nama atau kode kota/kabupaten..."
                           className="max-w-sm"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
@@ -490,18 +521,6 @@ function ListHarga({ eventMessage, eventSocket }: Props) {
                   }
                   {
                     data && currentItems
-                    .sort((a: UserListProps, b: UserListProps) => {
-                      // Sort by 'nama' field in ascending order
-                      if (a.nama_kategori < b.nama_kategori) return -1;
-                      if (a.nama_kategori > b.nama_kategori) return 1;
-                      
-                      // If 'nama' fields are equal, sort by 'bulan' field in ascending order
-                      if (a.bulan < b.bulan) return -1;
-                      if (a.bulan > b.bulan) return 1;
-                      
-                      // If both 'nama' and 'bulan' fields are equal, maintain the order
-                      return 0;
-                    })
                     .map((item: UserListProps, index: number) => (
                       <div key={index+item.id} className='flex flex-col px-4 py-4 border rounded-md'>
                         <div className='ml-auto'>
