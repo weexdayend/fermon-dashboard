@@ -100,10 +100,10 @@ function ListAlokasi({ eventSocket, eventMessage }: Props) {
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredData = searchTerm !== '' ? data.filter(item =>
-    item.kode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.nama_kategori.toLowerCase().includes(searchTerm.toLowerCase())
-  ) : data;
+  const filteredData = searchTerm !== '' ? data.filter((item: UserListProps) =>
+    (item.kode?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (item.nama_kategori?.toLowerCase().includes(searchTerm.toLowerCase()))
+) : data;
 
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
@@ -466,10 +466,10 @@ function ListAlokasi({ eventSocket, eventMessage }: Props) {
               <div className="w-full pt-6">
                 {
                   data.length > 0 && (
-                    <div className="flex flex-row justify-between items-center py-4">
-                      <div className='flex flex-row gap-2 items-center'>
+                    <div className="w-full flex flex-row justify-between items-center py-4">
+                      <div className='w-full flex flex-row gap-2 items-center'>
                         <Input
-                          placeholder="Cari nama atau kode gudang..."
+                          placeholder="Cari nama atau kode kabupaten..."
                           className="max-w-sm"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}

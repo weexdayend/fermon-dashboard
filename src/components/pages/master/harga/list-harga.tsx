@@ -100,10 +100,10 @@ function ListHarga({ eventMessage, eventSocket }: Props) {
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredData = searchTerm !== '' ? data.filter(item =>
-    item.kode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.nama_kategori.toLowerCase().includes(searchTerm.toLowerCase())
-  ) : data;
+  const filteredData = searchTerm !== '' ? data.filter((item: UserListProps) =>
+    (item.kode?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (item.nama_kategori?.toLowerCase().includes(searchTerm.toLowerCase()))
+) : data;
 
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
