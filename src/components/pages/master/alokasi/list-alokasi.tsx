@@ -141,9 +141,9 @@ function ListAlokasi({ eventSocket, eventMessage }: Props) {
       await axios.put('https://api.greatjbb.com/admin/alokasi', {
         id: idAlokasi,
         kode: kodeAlokasi,
-        besaran: besaranAlokasi,
-        bulan: bulanAlokasi,
-        tahun: tahunAlokasi,
+        besaran: besaranAlokasi.toString(),
+        bulan: bulanAlokasi.toString(),
+        tahun: tahunAlokasi.toString(),
         keterangan: keteranganAlokasi,
         kode_produk: kodeProduk,
         kategori: kategori,
