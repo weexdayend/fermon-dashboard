@@ -1,14 +1,30 @@
 import Link from 'next/link'
 import RootLayout from '@/app/(main)/layout'
-import { getServerAuthSession } from '@/servers/auth'
+import Image from 'next/legacy/image'
+import { Button } from '@/components/ui/button';
 
-export default async function NotFound() {
-  const authSession = await getServerAuthSession()
-  
+const imageWidth = 400;
+const aspectRatio = 50 / 80;
+
+export default async function NotFound() {  
   return (
     <RootLayout>
-      <div>
-        {authSession ? <Link href="/home">Go back to Home</Link> : <Link href="/sign-in">Login dulu</Link>}
+      <div className='w-full h-full flex flex-col gap-12 items-center justify-center'>
+        <div className='flex flex-col gap-4 items-center justify-center'>
+          <Image
+            src="/assets/icons/404-not-found.png"
+            width={imageWidth}
+            height={imageWidth * aspectRatio}
+            alt="saptakarya"
+            priority={true}
+          />
+          <p className='text-xs opacity-70'>What are you looking for? there is nothing here.</p>
+        </div>
+        <Link href="/">
+          <Button>
+            greatjbb.com
+          </Button>
+        </Link>
       </div>
     </RootLayout>
   )

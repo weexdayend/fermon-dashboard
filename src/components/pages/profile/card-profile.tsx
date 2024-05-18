@@ -39,6 +39,22 @@ const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
+  email: z.string().regex(
+    /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/,
+    {
+      message: "Invalid email format.",
+    }
+  ),
+  phone: z.string().min(11, {
+    message: "Phone number must be at least 11 digits.",
+  }).max(13, {
+    message: "Phone number must not exceed 13 digits.",
+  }),
+  whatsapp: z.string().min(11, {
+    message: "WhatsApp number must be at least 11 digits.",
+  }).max(13, {
+    message: "WhatsApp number must not exceed 13 digits.",
+  }),
 })
 
 function CardProfile({}: Props) {
@@ -113,7 +129,7 @@ function CardProfile({}: Props) {
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="shadcn" {...field} />
+                      <Input placeholder="Your full name..." {...field} />
                     </FormControl>
                     <FormDescription>
                       This is your public display name.
@@ -124,15 +140,47 @@ function CardProfile({}: Props) {
               />
               <FormField
                 control={form.control}
-                name="username"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="shadcn" {...field} />
+                      <Input placeholder="example@email.com" {...field} />
                     </FormControl>
                     <FormDescription>
                       This is your email for login to admin dashboard.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone</FormLabel>
+                    <FormControl>
+                      <Input placeholder="0812...." {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      This is your regular phone number.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="whatsapp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Whatsapp</FormLabel>
+                    <FormControl>
+                      <Input placeholder="0811...." {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      This is your contact whatsapp.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

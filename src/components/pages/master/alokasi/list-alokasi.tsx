@@ -324,6 +324,21 @@ function ListAlokasi({ eventSocket, eventMessage }: Props) {
     inputRef.current.click();
   }
 
+  const formatBesaran = (besaran: any) => {
+    // Remove commas and convert to float
+    const value = parseFloat(besaran.replace(/,/g, ''));
+    if (isNaN(value)) {
+      return 'Invalid value';
+    }
+  
+    // Convert to tons and kilograms
+    const tons = Math.floor(value / 1000);
+    const kilograms = (value % 1000).toFixed(3); // Keep three decimal places
+  
+    // Format the result
+    return `${tons} ton ${kilograms} kg`;
+  };
+
   return (
     <>
       <div className='flex flex-row items-center gap-2 p-4 rounded-lg border-2'>

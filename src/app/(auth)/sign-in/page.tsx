@@ -56,60 +56,77 @@ const SignIn = () => {
       }
     }
   }
-  
+
   return (
-    <main className="w-screen h-screen flex items-center justify-center px-6">
-      <div className="my-auto mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 gap-8 border rounded-xl">
-        <div className="flex h-20 w-full items-center justify-center rounded-lg bg-gradient-to-r from-blue-400 to-indigo-500 p-3 md:h-36">
+    <main className='flex h-screen w-screen'>
+      <div className="h-full w-full relative">
         <Image
-          src="/assets/icons/logo-pi-putih.svg"
-          width={imageWidth}
-          height={imageWidth * aspectRatio}
+          src="https://raw.githubusercontent.com/weexdayend/fermon-dashboard/main/public/assets/image/fertilizer-home.jpg"
+          width={1920}
+          height={1080}
           alt="saptakarya"
           priority={true}
+          className="object-cover h-full w-full"
+          layout='fill'
         />
+        <div className="absolute inset-0 bg-black opacity-45"></div>
+        <div className="absolute top-[40vh] left-10 w-full text-white py-8">
+          <h1 className="text-6xl font-semibold">Fertilizer Monitoring</h1>
+          <p className="text-lg">For monitoring distribution of your fertilizer.</p>
         </div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input 
-                      type='text' 
-                      placeholder='Username' 
-                      {...field} 
-                      value={field.value || ''}
-                    />
-                  </FormControl>
-                  <FormMessage className='text-red-500' />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input 
-                      type='password' 
-                      placeholder='Password' 
-                      {...field} 
-                      value={field.value || ''}
-                    />
-                  </FormControl>
-                  <FormMessage className='text-red-500' />
-                </FormItem>
-              )}
-            />
-            <div className='flex flex-col gap-2 w-full h-fit'>
-              <Button className='w-full bg-blue-500 text-white hover:bg-blue-600' type="submit">Sign-in</Button>
-            </div>
-          </form>
-        </Form>
+      </div>
+      <div className="h-full w-[600px] flex flex-col gap-4 items-center justify-center bg-white">
+        <div className="w-full flex flex-col gap-12 items-center">
+          <Image
+            src="/assets/icons/logo-pi-warna.svg"
+            width={imageWidth}
+            height={imageWidth * aspectRatio}
+            alt="saptakarya"
+            priority={true}
+          />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input 
+                        type='text' 
+                        placeholder='Username' 
+                        {...field} 
+                        value={field.value || ''}
+                        className='w-full'
+                      />
+                    </FormControl>
+                    <FormMessage className='text-red-500' />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input 
+                        type='password' 
+                        placeholder='Password' 
+                        {...field} 
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormMessage className='text-red-500' />
+                  </FormItem>
+                )}
+              />
+              <div className='flex flex-col gap-2 w-full h-fit'>
+                <Button className='w-full bg-blue-500 text-white hover:bg-blue-600' type="submit">Sign-in</Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
     </main>
   )
