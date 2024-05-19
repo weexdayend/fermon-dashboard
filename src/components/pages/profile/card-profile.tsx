@@ -62,19 +62,19 @@ function CardProfile({}: Props) {
 
   const [data, setData] = useState<any>()
 
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      email: "",
+      phone: "",
+      whatsapp: "",
     },
   })
+
+  const { setValue } = form;
  
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     console.log(values)
   }
 
@@ -82,7 +82,12 @@ function CardProfile({}: Props) {
     try {
       const response = await axios.post('https://api.greatjbb.com/user', { email: session?.user.email });
 
-      setData(response.data);
+      const userData = response.data
+
+      setData(userData)
+      setValue('username', userData.name)
+      setValue('email', userData.email)
+      
     } catch (error) {
       console.error('Error fetching data:', error);
     }

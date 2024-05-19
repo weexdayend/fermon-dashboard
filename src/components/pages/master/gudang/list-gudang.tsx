@@ -737,7 +737,7 @@ function ListGudang({ eventMessage, eventSocket }: Props) {
                                 {
                                   item.file
                                   .map((file: any, idxFile: number) => (
-                                    <>
+                                    <div key={idxFile}>
                                       {
                                         file.uri === null ? (
                                           <Dialog key={idxFile}>
@@ -771,7 +771,7 @@ function ListGudang({ eventMessage, eventSocket }: Props) {
                                           </Button>
                                         ) 
                                       }
-                                    </>
+                                    </div>
                                   ))
                                 }
                                 {

@@ -537,7 +537,7 @@ function ListDistributor({ eventMessage, eventSocket }: Props) {
                   }
                   {
                     data && currentItems.map((item: UserListProps, index: number) => (
-                      <div key={index+item.kode_distributor} className='flex flex-col px-4 py-4 border rounded-md'>
+                      <div key={index} className='flex flex-col px-4 py-4 border rounded-md'>
                         <div className='ml-auto'>
                           {
                             editIndex === index && editData ? (
@@ -663,7 +663,7 @@ function ListDistributor({ eventMessage, eventSocket }: Props) {
                                 {
                                   item.file
                                   .map((file: any, idxFile: number) => (
-                                    <>
+                                    <div key={idxFile}>
                                       {
                                         file.uri === null ? (
                                           <Dialog key={idxFile}>
@@ -697,7 +697,7 @@ function ListDistributor({ eventMessage, eventSocket }: Props) {
                                           </Button>
                                         ) 
                                       }
-                                    </>
+                                    </div>
                                   ))
                                 }
                                 {
