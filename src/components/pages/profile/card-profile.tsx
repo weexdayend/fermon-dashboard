@@ -147,12 +147,11 @@ function CardProfile({}: Props) {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.put('https://api.greatjbb.com/profile', values);
-      setData([])
+      reset()
     } catch (error) {
       console.error('Error insert data:', error);
     } finally {
       fetchData()
-      reset()
     }
   }
 

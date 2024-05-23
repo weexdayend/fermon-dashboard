@@ -85,24 +85,25 @@ const options = [
 function ListUser({}: Props) {
   const [data, setData] = useState<any[]>([])
 
-  const [userId, setUserId] = useState('')
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [image, setImage] = useState('')
+  const [userId, setUserId] = useState<string>('')
+  const [name, setName] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [confirmPassword, setConfirmPassword] = useState<string>('')
+  const [image, setImage] = useState<string>('')
   const [status, setStatus] = useState<boolean>(true)
-  const [role, setRole] = useState('')
+  const [role, setRole] = useState<string>('')
 
   const [item, setItem] = useState<any>()
-  const [dataChanged, setDataChanged] = useState(false);
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
+
   const [rowSelection, setRowSelection] = React.useState({})
 
   const fetchData = async () => {
@@ -119,7 +120,7 @@ function ListUser({}: Props) {
     fetchData();
   }, [])
 
-  const fetchEditUser = async () => {
+  const fetchEditUser = async (email: string) => {
     const payload = {
       email: email
     }
@@ -133,12 +134,6 @@ function ListUser({}: Props) {
       console.error('Error fetching data:', error);
     }
   }
-
-  useEffect(() => {
-    if (userId) {
-      fetchEditUser()
-    }
-  }, [])
 
   useEffect(() => {
     if (item) {
@@ -220,6 +215,8 @@ function ListUser({}: Props) {
                     onClick={() => {
                       setUserId(user.email)
                       setEmail(user.email)
+
+                      fetchEditUser(user.email)
                     }}
                   >
                     Edit User
