@@ -138,7 +138,7 @@ function ListUser({}: Props) {
     if (userId) {
       fetchEditUser()
     }
-  }, [userId])
+  }, [])
 
   useEffect(() => {
     if (item) {
