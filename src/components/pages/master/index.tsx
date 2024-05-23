@@ -41,11 +41,19 @@ function Index({}: Props) {
 
   const [isConnected, setIsConnected] = useState(false);
   const [transport, setTransport] = useState("N/A");
+
+  const [role, setRole] = useState('')
   
   const [eventSocket, setEventSocket] = useState<any>([])
   const [eventMessage, setEventMessage] = useState<string>('')
 
   const [importStatus, setImportStatus] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (session?.user) {
+      setRole(session.user.role)
+    }
+  }, [session?.user])
 
   useEffect(() => {
     if (socket.connected) {
@@ -112,19 +120,27 @@ function Index({}: Props) {
     setShowing(value)
   }
 
+  const NotGrantedAccess = () => {
+    return (
+      <div className='min-h-[70vh] flex flex-col items-center justify-center gap-4'>
+        <h1>You're not granted for accessing this page.</h1>
+      </div>
+    )
+  }
+
   const componentMapping: { [key: string]: React.ReactNode } = {
-    Produk: <Produk eventSocket={eventSocket} eventMessage={eventMessage} />,
-    Alokasi: <Alokasi eventSocket={eventSocket} eventMessage={eventMessage} />,
-    Harga: <Harga eventSocket={eventSocket} eventMessage={eventMessage} />,
+    Produk: <Produk eventSocket={eventSocket} eventMessage={eventMessage} role={role} />,
+    Alokasi: <Alokasi eventSocket={eventSocket} eventMessage={eventMessage} role={role} />,
+    Harga: <Harga eventSocket={eventSocket} eventMessage={eventMessage} role={role} />,
     Provinsi: <Provinsi />,
     Kabupaten: <Kabupaten />,
     Kecamatan: <Kecamatan />,
-    Gudang: <Gudang eventSocket={eventSocket} eventMessage={eventMessage} />,
-    Distributor: <Distributor eventSocket={eventSocket} eventMessage={eventMessage} />,
-    Kios: <Kios eventSocket={eventSocket} eventMessage={eventMessage} />,
-    Mapping: <Mapping eventSocket={eventSocket} eventMessage={eventMessage} />,
-    Report: <Report />,
-    Petugas: <Petugas eventSocket={eventSocket} eventMessage={eventMessage} />,
+    Gudang: <Gudang eventSocket={eventSocket} eventMessage={eventMessage} role={role} />,
+    Distributor: <Distributor eventSocket={eventSocket} eventMessage={eventMessage} role={role} />,
+    Kios: <Kios eventSocket={eventSocket} eventMessage={eventMessage} role={role} />,
+    Mapping: <Mapping eventSocket={eventSocket} eventMessage={eventMessage} role={role} />,
+    Report: (role === 'SUPER ADMIN' || role === 'ADMIN') ? <Report /> : <NotGrantedAccess />,
+    Petugas: <Petugas eventSocket={eventSocket} eventMessage={eventMessage} role={role} />,
   };
 
   if (!isConnected) {

@@ -51,6 +51,7 @@ import Image from 'next/legacy/image'
 type Props = {
   eventSocket: []
   eventMessage: string
+  role: string
 }
 
 type UserListProps = {
@@ -77,7 +78,7 @@ const exampelData = [
   }
 ]
 
-function ListPetugas({ eventMessage, eventSocket }: Props) {
+function ListPetugas({ eventMessage, eventSocket, role }: Props) {
   const [data, setData] = useState<any[]>([])
   const [dataWilayah, setDataWilayah] = useState<any[]>([])
   const [loader, setLoader] = useState(false)
@@ -349,18 +350,22 @@ function ListPetugas({ eventMessage, eventSocket }: Props) {
 
   return (
     <>
-      <div className='flex flex-row items-center gap-2 p-4 rounded-lg border-2'>
-        <h1 className='text-sm font-normal opacity-80'>Insert or update data with bulk : </h1>
-        <Button
-          className='flex flex-row gap-1.5 ml-auto'
-          onClick={handleOpenImport}
-        >
-          Import Data
-          {
-            openImport ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />
-          }
-        </Button>
-      </div>
+      {
+        (role === 'SUPER ADMIN' || role === 'ADMIN') && (
+          <div className='flex flex-row items-center gap-2 p-4 rounded-lg border-2'>
+            <h1 className='text-sm font-normal opacity-80'>Insert or update data with bulk : </h1>
+            <Button
+              className='flex flex-row gap-1.5 ml-auto'
+              onClick={handleOpenImport}
+            >
+              Import Data
+              {
+                openImport ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />
+              }
+            </Button>
+          </div>
+        )
+      }
       {
         openImport ? (
           <div className='flex flex-col gap-4'>
@@ -582,13 +587,19 @@ function ListPetugas({ eventMessage, eventSocket }: Props) {
                                 </AlertDialog>
                               </div>
                             ) : (
-                              <Button
-                                variant={'ghost'}
-                                size={'icon'}
-                                onClick={() => handleEditClick(index, item)}
-                              >
-                                <PenSquareIcon size={16} />
-                              </Button>
+                              <>
+                               {
+                                (role === 'SUPER ADMIN' || role === 'ADMIN') && (
+                                  <Button
+                                    variant={'ghost'}
+                                    size={'icon'}
+                                    onClick={() => handleEditClick(index, item)}
+                                  >
+                                    <PenSquareIcon size={16} />
+                                  </Button>
+                                )
+                               }
+                              </>
                             )
                           }
                         </div>

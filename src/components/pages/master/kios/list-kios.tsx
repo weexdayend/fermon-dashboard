@@ -55,6 +55,7 @@ import TableEvent from '../report/table-event'
 type Props = {
   eventSocket: []
   eventMessage: string
+  role: string
 }
 
 type UserListProps = {
@@ -79,7 +80,7 @@ const exampelData = [
   }
 ]
 
-function ListKios({ eventSocket, eventMessage }: Props) {
+function ListKios({ eventSocket, eventMessage, role }: Props) {
   const [data, setData] = useState<any[]>([])
   const [database, setDatabase] = useState('')
   const [loader, setLoader] = useState(false)
@@ -381,15 +382,19 @@ function ListKios({ eventSocket, eventMessage }: Props) {
             )
           }
         </div>
-        <Button
-          className='flex flex-row gap-1.5 ml-auto'
-          onClick={handleOpenImport}
-        >
-          Import Data
-          {
-            openImport ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />
-          }
-        </Button>
+        {
+          (role === 'SUPER ADMIN' || role === 'ADMIN') && (
+            <Button
+              className='flex flex-row gap-1.5 ml-auto'
+              onClick={handleOpenImport}
+            >
+              Import Data
+              {
+                openImport ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />
+              }
+            </Button>
+          )
+        }
       </div>
       {
         openImport ? (
@@ -605,13 +610,19 @@ function ListKios({ eventSocket, eventMessage }: Props) {
                                 </AlertDialog>
                               </div>
                             ) : (
-                              <Button
-                                variant={'ghost'}
-                                size={'icon'}
-                                onClick={() => handleEditClick(index, item)}
-                              >
-                                <PenSquareIcon size={16} />
-                              </Button>
+                              <>
+                               {
+                                (role === 'SUPER ADMIN' || role === 'ADMIN') && (
+                                  <Button
+                                    variant={'ghost'}
+                                    size={'icon'}
+                                    onClick={() => handleEditClick(index, item)}
+                                  >
+                                    <PenSquareIcon size={16} />
+                                  </Button>
+                                )
+                               }
+                              </>
                             )
                           }
                         </div>
@@ -652,9 +663,9 @@ function ListKios({ eventSocket, eventMessage }: Props) {
                                 <h1 className='text-sm'>{item.nama_pengecer}</h1>
                               </div>
                               <div className='flex flex-col w-full'>
-                                <h1 className='text-sm'>{item.alamat}</h1>
-                                <h1 className='text-xs opacity-70'>long {item.long}</h1>
-                                <h1 className='text-xs opacity-70'>lat {item.lat}</h1>
+                                <h1 className='text-sm'>{item.alamat ? item.alamat : 'alamat belum di isi.'}</h1>
+                                <h1 className='text-xs opacity-70'>long {item.long ? item.long : 'longitude belum di isi.'}</h1>
+                                <h1 className='text-xs opacity-70'>lat {item.lat ? item.lat : 'lattitude belum di isi.'}</h1>
                               </div>
 
                               <div className='w-full col-span-4 h-0.5 rounded-full bg-gray-100 my-2' />
@@ -667,12 +678,16 @@ function ListKios({ eventSocket, eventMessage }: Props) {
                                       {
                                         file.uri === null ? (
                                           <Dialog key={idxFile}>
-                                            <DialogTrigger asChild>
-                                              <Button variant="outline" className='flex flex-row gap-1 w-fit py-1 px-3 rounded-full border-red-600 border'>
-                                                <XCircleIcon size={16} className='text-red-600' />
-                                                <h1 className='text-xs opacity-70 uppercase'>{file.kategori}</h1>
-                                              </Button>
-                                            </DialogTrigger>
+                                            {
+                                              (role === 'SUPER ADMIN' || role === 'ADMIN') && (
+                                                <DialogTrigger asChild>
+                                                  <Button variant="outline" className='flex flex-row gap-1 w-fit py-1 px-3 rounded-full border-red-600 border'>
+                                                    <XCircleIcon size={16} className='text-red-600' />
+                                                    <h1 className='text-xs opacity-70 uppercase'>{file.kategori}</h1>
+                                                  </Button>
+                                                </DialogTrigger>
+                                              )
+                                            }
                                             <DialogContent className="sm:max-w-[425px]">
                                               <DialogHeader>
                                                 <DialogTitle>Upload File Kedistributoran</DialogTitle>

@@ -55,6 +55,7 @@ import TableEvent from '../report/table-event'
 type Props = {
   eventSocket: []
   eventMessage: string
+  role: string
 }
 
 type UserListProps = {
@@ -89,7 +90,7 @@ const exampelData = [
   }
 ]
 
-function ListGudang({ eventMessage, eventSocket }: Props) {
+function ListGudang({ eventMessage, eventSocket, role }: Props) {
   const [data, setData] = useState<any[]>([])
   const [database, setDatabase] = useState('')
   const [loader, setLoader] = useState(false)
@@ -419,15 +420,19 @@ function ListGudang({ eventMessage, eventSocket }: Props) {
             )
           }
         </div>
-        <Button
-          className='flex flex-row gap-1.5 ml-auto'
-          onClick={handleOpenImport}
-        >
-          Import Data
-          {
-            openImport ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />
-          }
-        </Button>
+        {
+          (role === 'SUPER ADMIN' || role === 'ADMIN') && (
+            <Button
+              className='flex flex-row gap-1.5 ml-auto'
+              onClick={handleOpenImport}
+            >
+              Import Data
+              {
+                openImport ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />
+              }
+            </Button>
+          )
+        }
       </div>
       {
         openImport ? (
@@ -643,13 +648,19 @@ function ListGudang({ eventMessage, eventSocket }: Props) {
                                 </AlertDialog>
                               </div>
                             ) : (
-                              <Button
-                                variant={'ghost'}
-                                size={'icon'}
-                                onClick={() => handleEditClick(index, item)}
-                              >
-                                <PenSquareIcon size={16} />
-                              </Button>
+                              <>
+                               {
+                                (role === 'SUPER ADMIN' || role === 'ADMIN') && (
+                                  <Button
+                                    variant={'ghost'}
+                                    size={'icon'}
+                                    onClick={() => handleEditClick(index, item)}
+                                  >
+                                    <PenSquareIcon size={16} />
+                                  </Button>
+                                )
+                               }
+                              </>
                             )
                           }
                         </div>
@@ -714,21 +725,21 @@ function ListGudang({ eventMessage, eventSocket }: Props) {
                               <div className='flex flex-col w-full'>
                                 <h1 className='text-xs opacity-70'>{item.kode_gudang}</h1>
                                 <h1 className='text-sm'>{item.nama_gudang}</h1>
-                                <h1 className='text-xs opacity-70'>{item.alamat}</h1>
+                                <h1 className='text-xs opacity-70'>{item.alamat ? item.alamat : 'alamat belum di isi.'}</h1>
                               </div>
                               <div className='flex flex-col w-full'>
                                 <h1 className='text-xs opacity-70'>Pemilik</h1>
-                                <h1 className='text-sm'>{item.pemilik}</h1>
-                                <h1 className='text-xs opacity-70'>{item.phone_pemilik}</h1>
+                                <h1 className='text-sm'>{item.pemilik ? item.pemilik : 'pemilik belum di isi.'}</h1>
+                                <h1 className='text-xs opacity-70'>{item.phone_pemilik ? item.phone_pemilik : 'telepon pemilik belum di isi.'}</h1>
                               </div>
                               <div className='flex flex-col w-full'>
                                 <h1 className='text-xs opacity-70'>Pengelola</h1>
-                                <h1 className='text-sm'>{item.pengelola}</h1>
+                                <h1 className='text-sm'>{item.pengelola ? item.pengelola : 'pengelola belum di isi.'}</h1>
                               </div>
                               <div className='flex flex-col w-full'>
                                 <h1 className='text-xs opacity-70'>Kepala Gudang</h1>
-                                <h1 className='text-sm'>{item.kepala_gudang}</h1>
-                                <h1 className='text-xs opacity-70'>{item.phone_kepala_gudang}</h1>
+                                <h1 className='text-sm'>{item.kepala_gudang ? item.kepala_gudang : 'kepala gudang belum di isi.'}</h1>
+                                <h1 className='text-xs opacity-70'>{item.phone_kepala_gudang ? item.phone_kepala_gudang : 'telepon kepala gudang belum di isi.'}</h1>
                               </div>
 
                               <div className='w-full col-span-4 h-0.5 rounded-full bg-gray-100 my-2' />
@@ -741,12 +752,16 @@ function ListGudang({ eventMessage, eventSocket }: Props) {
                                       {
                                         file.uri === null ? (
                                           <Dialog key={idxFile}>
-                                            <DialogTrigger asChild>
-                                              <Button variant="outline" className='flex flex-row gap-1 w-fit py-1 px-3 rounded-full border-red-600 border'>
-                                                <XCircleIcon size={16} className='text-red-600' />
-                                                <h1 className='text-xs opacity-70 capitalize'>{file.kategori}</h1>
-                                              </Button>
-                                            </DialogTrigger>
+                                            {
+                                              (role === 'SUPER ADMIN' || role === 'ADMIN') && (
+                                                <DialogTrigger asChild>
+                                                  <Button variant="outline" className='flex flex-row gap-1 w-fit py-1 px-3 rounded-full border-red-600 border'>
+                                                    <XCircleIcon size={16} className='text-red-600' />
+                                                    <h1 className='text-xs opacity-70 capitalize'>{file.kategori}</h1>
+                                                  </Button>
+                                                </DialogTrigger>
+                                              )
+                                            }
                                             <DialogContent className="sm:max-w-[425px]">
                                               <DialogHeader>
                                                 <DialogTitle>Upload File Kedistributoran</DialogTitle>

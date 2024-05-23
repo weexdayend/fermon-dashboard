@@ -90,6 +90,7 @@ import TableEvent from '../report/table-event'
 type Props = {
   eventSocket: []
   eventMessage: string
+  role: string
 }
 
 type UserListProps = {
@@ -122,7 +123,7 @@ const exampelData = [
   }
 ]
 
-function ListMapping({ eventMessage, eventSocket }: Props) {
+function ListMapping({ eventMessage, eventSocket, role }: Props) {
   const [data, setData] = useState<any[]>([])
   const [database, setDatabase] = useState('')
   const [loader, setLoader] = useState(false)
@@ -483,15 +484,19 @@ function ListMapping({ eventMessage, eventSocket }: Props) {
             )
           }
         </div>
-        <Button
-          className='flex flex-row gap-1.5 ml-auto'
-          onClick={handleOpenImport}
-        >
-          Import Data
-          {
-            openImport ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />
-          }
-        </Button>
+        {
+          (role === 'SUPER ADMIN' || role === 'ADMIN') && (
+            <Button
+              className='flex flex-row gap-1.5 ml-auto'
+              onClick={handleOpenImport}
+            >
+              Import Data
+              {
+                openImport ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />
+              }
+            </Button>
+          )
+        }
       </div>
       {
         openImport ? (

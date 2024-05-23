@@ -90,6 +90,7 @@ import TableEvent from '../report/table-event'
 type Props = {
   eventSocket: []
   eventMessage: string
+  role: string
 }
 
 type UserListProps = {
@@ -107,7 +108,7 @@ const exampelData = [
   }
 ]
 
-function ListProduk({ eventMessage, eventSocket }: Props) {
+function ListProduk({ eventMessage, eventSocket, role }: Props) {
   const [data, setData] = useState<any[]>([])
   const [database, setDatabase] = useState('')
   const [loader, setLoader] = useState(false)
@@ -382,15 +383,19 @@ function ListProduk({ eventMessage, eventSocket }: Props) {
             )
           }
         </div>
-        <Button
-          className='flex flex-row gap-1.5 ml-auto'
-          onClick={handleOpenImport}
-        >
-          Import Data
-          {
-            openImport ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />
-          }
-        </Button>
+        {
+          (role === 'SUPER ADMIN' || role === 'ADMIN') && (
+            <Button
+              className='flex flex-row gap-1.5 ml-auto'
+              onClick={handleOpenImport}
+            >
+              Import Data
+              {
+                openImport ? <ChevronUpIcon size={16} /> : <ChevronDownIcon size={16} />
+              }
+            </Button>
+          )
+        }
       </div>
       {
         openImport ? (
@@ -523,15 +528,6 @@ function ListProduk({ eventMessage, eventSocket }: Props) {
                       }
                       className="max-w-sm"
                     />
-                  </div>
-                  <div className='flex flex=row gap-4'>
-                    {/* <Button 
-                      variant="outline"
-                      className='flex flex-row items-center gap-1.5'
-                    >
-                      <PlusCircleIcon size={16} />
-                      Add Produk
-                    </Button> */}
                   </div>
                 </div>
                 <div className="rounded-md border">

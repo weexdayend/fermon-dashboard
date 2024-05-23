@@ -63,6 +63,7 @@ import {
 } from "@/components/ui/select"
 
 import { MoreHorizontal } from "lucide-react"
+import { useSession } from 'next-auth/react'
 
 type Props = {}
 
@@ -83,6 +84,8 @@ const options = [
 ];
 
 function ListUser({}: Props) {
+  const { data: session } = useSession()
+  
   const [data, setData] = useState<any[]>([])
 
   const [userId, setUserId] = useState<string>('')
@@ -195,9 +198,11 @@ function ListUser({}: Props) {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const user = row.original
-   
-        return (
+        const user = row.original;
+
+        (session?.user.role === 'SUPER ADMIN' || session?.user.role === 'ADMIN') ? (
+          null
+        ) : (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -266,13 +271,17 @@ function ListUser({}: Props) {
                 }
                 className="max-w-sm"
               />
-              <SheetTrigger asChild>
-                <Button 
-                  variant="outline"
-                >
-                  Add New User
-                </Button>
-              </SheetTrigger>
+              {
+                (session?.user.role === 'SUPER ADMIN' || session?.user.role === 'ADMIN') && (
+                  <SheetTrigger asChild>
+                    <Button 
+                      variant="outline"
+                    >
+                      Add New User
+                    </Button>
+                  </SheetTrigger>
+                )
+              }
             </div>
             <div className="rounded-md border">
               <Table>

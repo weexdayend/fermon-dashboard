@@ -64,8 +64,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+
 import Link from 'next/link';
+
+import { useSession } from 'next-auth/react';
 
 type AppListProps = {
   id: string
@@ -79,6 +83,8 @@ type AppListProps = {
 type Props = {}
 
 function ListApp({}: Props) {
+  const { data: session } = useSession()
+  
   const [data, setData] = useState<any[]>([])
 
   const [appId, setAppId] = useState('')
@@ -214,9 +220,11 @@ function ListApp({}: Props) {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const app = row.original
-   
-        return (
+        const app = row.original;
+
+        (session?.user.role === 'SUPER ADMIN' || session?.user.role === 'ADMIN') ? (
+          null
+        ) : (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -284,18 +292,22 @@ function ListApp({}: Props) {
                 }
                 className="max-w-sm"
               />
-              <SheetTrigger asChild>
-                <Button 
-                  variant="outline"
-                  onClick={() => {
-                    setAppId('')
-                    setAppName('')
-                    setEndpoint('')
-                  }}
-                >
-                  Add New App
-                </Button>
-              </SheetTrigger>
+              {
+                (session?.user.role === 'SUPER ADMIN' || session?.user.role === 'ADMIN') && (
+                  <SheetTrigger asChild>
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        setAppId('')
+                        setAppName('')
+                        setEndpoint('')
+                      }}
+                    >
+                      Add New App
+                    </Button>
+                  </SheetTrigger>
+                )
+              }
             </div>
             <div className="rounded-md border">
               <Table>
