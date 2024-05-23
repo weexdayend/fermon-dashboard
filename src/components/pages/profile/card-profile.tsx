@@ -351,7 +351,7 @@ function CardProfile({}: Props) {
               <DialogHeader>
                 <DialogTitle>Change Password</DialogTitle>
                 <DialogDescription>
-                  Make changes to your password here. Click save when you're done.
+                  <p>Make changes to your password here. Click save when you&apos;re done.</p>
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
