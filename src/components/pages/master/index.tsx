@@ -29,10 +29,14 @@ import {
 } from 'lucide-react'
 
 import { socket } from '@/socket'
+import { useSession } from 'next-auth/react'
+import LoadingScreen from '@/components/shared/loading'
 
 type Props = {}
 
 function Index({}: Props) {
+  const { data: session } = useSession()
+  
   const { toast } = useToast()
 
   const [isConnected, setIsConnected] = useState(false);
@@ -123,10 +127,18 @@ function Index({}: Props) {
     Petugas: <Petugas eventSocket={eventSocket} eventMessage={eventMessage} />,
   };
 
+  if (!isConnected) {
+    return (
+      <div className='min-h-[70vh] flex flex-col items-center justify-center gap-4'>
+        <LoadingScreen />
+      </div>
+    )
+  }
+
   return (
     <div className='w-full h-full flex flex-col gap-4'>
       {
-        showing ? (
+        isConnected && showing ? (
           <div className='flex flex-row w-full items-center justify-between'>
             <div className='flex flex-row items-center gap-2'>
               <Button 
