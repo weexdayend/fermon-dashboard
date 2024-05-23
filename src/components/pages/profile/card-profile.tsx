@@ -1,7 +1,7 @@
 'use client'
 
 import axios from 'axios'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { useSession } from "next-auth/react"
 import {
   Card,
@@ -155,38 +155,38 @@ function CardProfile({}: Props) {
     }
   }
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await axios.post('https://api.greatjbb.com/user', { email: session?.user.email });
 
-      const userData = response.data
+      const userData = response.data;
 
-      setData(userData)
-      setIdUser(userData.id_user)
+      setData(userData);
+      setIdUser(userData.id_user);
 
-      setValue('id', userData.id_user)
-      setValue('kode_petugas', userData.kode_petugas)
-      setValue('nama_petugas', userData.nama_petugas)
-      setValue('email', userData.email)
-      setValue('phone', userData.contact)
-      setValue('whatsapp', userData.contact_wa)
-      setValue('jabatan', userData.jabatan)
-      setValue('status_kepagawaian', userData.status_kepagawaian)
-      setValue('role_user', userData.role_user)
-      setValue('wilker', userData.wilker)
-      setValue('foto', userData.foto)
+      setValue('id', userData.id_user);
+      setValue('kode_petugas', userData.kode_petugas);
+      setValue('nama_petugas', userData.nama_petugas);
+      setValue('email', userData.email);
+      setValue('phone', userData.contact);
+      setValue('whatsapp', userData.contact_wa);
+      setValue('jabatan', userData.jabatan);
+      setValue('status_kepagawaian', userData.status_kepagawaian);
+      setValue('role_user', userData.role_user);
+      setValue('wilker', userData.wilker);
+      setValue('foto', userData.foto);
 
       setImageUrl(userData.foto || "https://github.com/shadcn.png");
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };
+  }, [session?.user.email, setValue]);
 
   useEffect(() => {
     if (session?.user) {
-      fetchData()
+      fetchData();
     }
-  }, [session?.user])
+  }, [session?.user, fetchData]);
 
   const inputRef = useRef<any>(null);
 
