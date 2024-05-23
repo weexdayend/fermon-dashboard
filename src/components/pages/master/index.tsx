@@ -123,7 +123,7 @@ function Index({}: Props) {
   const NotGrantedAccess = () => {
     return (
       <div className='min-h-[70vh] flex flex-col items-center justify-center gap-4'>
-        <h1>You're not granted for accessing this page.</h1>
+        <h1>You&apos;re not granted for accessing this page.</h1>
       </div>
     )
   }
