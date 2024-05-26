@@ -60,14 +60,10 @@ const SignIn = () => {
   return (
     <main className='flex h-screen w-screen'>
       <div className="h-full w-full relative">
-        <Image
+        <img
           src="https://utfs.io/f/ddb61aa8-8935-4b6f-8043-75bb93d284cd-ldgjjq.jpg"
-          width={1920}
-          height={1080}
           alt="saptakarya"
-          priority={true}
           className="object-cover h-full w-full"
-          layout='fill'
         />
         <div className="absolute inset-0 bg-black opacity-45"></div>
         <div className="absolute top-[40vh] left-10 w-full text-white py-8">
