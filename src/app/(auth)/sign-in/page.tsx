@@ -78,7 +78,7 @@ const SignIn = () => {
       <div className="h-full w-[600px] flex flex-col gap-4 items-center justify-center bg-white">
         <div className="w-full flex flex-col gap-12 items-center">
           <Image
-            src="/assets/icons/logo-pi-warna.svg"
+            src="https://raw.githubusercontent.com/weexdayend/fermon-dashboard/e0c322c7aa39b91fbeb62208893fc1e07b910d2d/public/assets/icons/logo-pi-warna.svg"
             width={imageWidth}
             height={imageWidth * aspectRatio}
             alt="saptakarya"
