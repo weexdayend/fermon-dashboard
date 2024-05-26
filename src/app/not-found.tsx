@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import RootLayout from '@/app/(main)/layout'
-import Image from 'next/legacy/image'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button';
 
 const imageWidth = 400;
