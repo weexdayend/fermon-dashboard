@@ -15,19 +15,81 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert"
 import SimpleProgressBar from '@/components/shared/progress'
 
 import {
   UploadCloudIcon,
   FileCheck2Icon,
-  LucideTrash2
+  LucideTrash2,
+  FileIcon
 } from 'lucide-react'
+
+import * as XLSX from 'xlsx';
 
 type Props = {
   eventSocket: any;
   eventMessage: any;
   handleTabIdentifier: (identifier: any) => void;
 }
+
+const exampleDataF5 = [
+  {
+    kode_produsen: '',
+    nama_produsen: '',
+    no_f5: '',
+    kode_distributor: '',
+    nama_distributor: '',
+    kode_provinsi: '',
+    nama_provinsi: '',
+    kode_kab_kota: '',
+    nama_kab_kota: '',
+    bulan: '',
+    tahun: '',
+    kode_produk: '',
+    nama_produk: '',
+    stok_awal: '',
+    penebusan: '',
+    penyaluran: '',
+    stok_akhir: '',
+    status_f5: '',
+    keterangan: ''
+  }
+];
+
+const exampleDataF6 = [
+  {
+    kode_produsen: '',
+    nama_produsen: '',
+    no_f6: '',
+    kode_distributor: '',
+    nama_distributor: '',
+    kode_provinsi: '',
+    nama_provinsi: '',
+    kode_kab_kota: '',
+    nama_kab_kota: '',
+    kode_kecamatan: '',
+    nama_kecamatan: '',
+    bulan: '',
+    tahun: '',
+    kode_pengecer: '',
+    nama_pengecer: '',
+    kode_produk: '',
+    nama_produk: '',
+    stok_awal: '',
+    penebusan: '',
+    penyaluran: '',
+    stok_akhir: '',
+    status_f6: '',
+    keterangan: ''
+  }
+];
+
+
 
 function TabContents({ eventSocket, eventMessage, handleTabIdentifier }: Props) {
   const inputRef = useRef<any>(null);
@@ -108,6 +170,24 @@ function TabContents({ eventSocket, eventMessage, handleTabIdentifier }: Props) 
     inputRef.current.click();
   }
 
+  const exportToExcel = (tab: string) => {
+    let exampleDataFiltered
+    const formatType = 'baru'
+
+    if (tab == 'F5') {
+      exampleDataFiltered = exampleDataF5
+    } else {
+      exampleDataFiltered = exampleDataF6
+    }
+
+    const exampleSheet = XLSX.utils.json_to_sheet(exampleDataFiltered);
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, exampleSheet, 'Standar Format');
+    XLSX.writeFile(workbook, `standar-data-${formatType}-${tab}.xlsx`);
+  };
+
   return (
     <Tabs defaultValue="distributor" className="w-full h-fit">
       <TabsList className="grid w-full grid-cols-2">
@@ -115,6 +195,13 @@ function TabContents({ eventSocket, eventMessage, handleTabIdentifier }: Props) 
         <TabsTrigger value="kios">Report F6</TabsTrigger>
       </TabsList>
       <TabsContent value="distributor" className='pt-2'>
+        <Alert className='mb-6'>
+          <FileIcon className="h-4 w-4" />
+          <AlertTitle>Format F5</AlertTitle>
+          <AlertDescription>
+            <span onClick={() => exportToExcel('F5')} className='text-blue-500 font-bold underline hover:text-blue-600 active:scale-95 cursor-pointer'>Download</span> this format first if you want to import csv report f5, this is <span className='font-bold'>Mandatory Format</span>.
+          </AlertDescription>
+        </Alert>
         <Card className='border shadow-none'>
           {
             eventSocket.length > 0 ? (<></>) : (
@@ -187,6 +274,13 @@ function TabContents({ eventSocket, eventMessage, handleTabIdentifier }: Props) 
         </Card>
       </TabsContent>
       <TabsContent value="kios" className='pt-2'>
+        <Alert className='mb-6'>
+          <FileIcon className="h-4 w-4" />
+          <AlertTitle>Format F6</AlertTitle>
+          <AlertDescription>
+            <span onClick={() => exportToExcel('F6')} className='text-blue-500 font-bold underline hover:text-blue-600 active:scale-95 cursor-pointer'>Download</span> this format first if you want to import csv report f6, this is <span className='font-bold'>Mandatory Format</span>.
+          </AlertDescription>
+        </Alert>
         <Card className='border shadow-none'>
           {
             eventSocket.length > 0 ? (<></>) : (
