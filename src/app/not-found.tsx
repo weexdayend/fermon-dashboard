@@ -12,7 +12,7 @@ export default async function NotFound() {
       <div className='w-full h-full flex flex-col gap-12 items-center justify-center'>
         <div className='flex flex-col gap-4 items-center justify-center'>
           <Image
-            src="/assets/icons/404-not-found.png"
+            src="https://utfs.io/f/9a6e982a-e9bc-43fd-bfbe-24a299acd7f4-8e8ss3.png"
             width={imageWidth}
             height={imageWidth * aspectRatio}
             alt="saptakarya"

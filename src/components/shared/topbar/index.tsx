@@ -13,7 +13,7 @@ function Index({}: Props) {
     <nav className='topbar bg-background border-b shadbow-xl'>
       <Link href='/home' className='flex items-center justify-center'>
         <Image
-          src="https://raw.githubusercontent.com/weexdayend/fermon-dashboard/e0c322c7aa39b91fbeb62208893fc1e07b910d2d/public/assets/icons/logo-pi-warna.svg"
+          src="https://utfs.io/f/5ba07116-a629-4637-9104-286e39ef087c-mnmnjd.svg"
           width={imageWidth}
           height={imageWidth * aspectRatio}
           alt="saptakarya"

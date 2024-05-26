@@ -4,9 +4,17 @@ const nextConfig = {
         domains: ['admin.greatjbb.com'],
         remotePatterns: [
             {
-            protocol: "https",
-            hostname: "raw.githubusercontent.com",
-            }
+                protocol: "https",
+                hostname: "raw.githubusercontent.com",
+            },
+            {
+                protocol: "https",
+                hostname: "admin.greatjbb.com",
+            },
+            {
+                protocol: "https",
+                hostname: "utfs.io",
+            }   
         ]
     }
 };

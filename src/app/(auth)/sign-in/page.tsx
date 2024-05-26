@@ -61,7 +61,7 @@ const SignIn = () => {
     <main className='flex h-screen w-screen'>
       <div className="h-full w-full relative">
         <Image
-          src="/assets/image/fertilizer-home.jpg"
+          src="https://utfs.io/f/ddb61aa8-8935-4b6f-8043-75bb93d284cd-ldgjjq.jpg"
           width={1920}
           height={1080}
           alt="saptakarya"
@@ -78,7 +78,7 @@ const SignIn = () => {
       <div className="h-full w-[600px] flex flex-col gap-4 items-center justify-center bg-white">
         <div className="w-full flex flex-col gap-12 items-center">
           <Image
-            src="/assets/icons/logo-pi-warna.svg"
+            src="https://utfs.io/f/5ba07116-a629-4637-9104-286e39ef087c-mnmnjd.svg"
             width={imageWidth}
             height={imageWidth * aspectRatio}
             alt="saptakarya"
