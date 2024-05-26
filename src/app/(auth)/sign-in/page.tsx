@@ -61,7 +61,7 @@ const SignIn = () => {
     <main className='flex h-screen w-screen'>
       <div className="h-full w-full relative">
         <Image
-          src="https://raw.githubusercontent.com/weexdayend/fermon-dashboard/main/public/assets/image/fertilizer-home.jpg"
+          src="/public/assets/image/fertilizer-home.jpg"
           width={1920}
           height={1080}
           alt="saptakarya"
