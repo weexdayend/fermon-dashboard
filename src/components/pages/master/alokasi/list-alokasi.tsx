@@ -367,8 +367,7 @@ function ListAlokasi({ eventSocket, eventMessage, role }: Props) {
           }
         </div>
         {
-          role === 'SUPER ADMIN' ||
-          role === 'ADMIN' && (
+          (role === 'SUPER ADMIN' || role === 'ADMIN') && (
             <Button
               className='flex flex-row gap-1.5 ml-auto'
               onClick={handleOpenImport}
