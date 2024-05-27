@@ -506,7 +506,7 @@ function ListAlokasi({ eventSocket, eventMessage, role }: Props) {
                     <div className="w-full flex flex-row justify-between items-center py-4">
                       <div className='w-full flex flex-row gap-2 items-center'>
                         <Input
-                          placeholder="Cari nama atau kode kabupaten..."
+                          placeholder="Cari nama atau kode kecamatan..."
                           className="max-w-sm"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
