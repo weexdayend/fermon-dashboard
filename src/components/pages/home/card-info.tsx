@@ -37,17 +37,22 @@ function CardInfo({}: Props) {
   }, [])
 
   return (
-    <div className='grid grid-cols-4 gap-4'>
-      {
-        data && data.map((item: any, index: number) => (
-          <Card key={index} className='border shadow-none'>
-            <CardContent className='flex flex-col p-6'>
-              <h1 className='text-4xl font-bold'>{item.total}</h1>
-              <h1 className='text-base opacity-70'>{item.keterangan}</h1>
-            </CardContent>
-          </Card>
-        ))
-      }
+    <div className='w-full flex flex-col gap-4 pt-6'>
+      <div className='w-full col-span-3 flex flex-row items-center gap-4'>
+        <h1 className='text-6xl font-bold pb-2 mb-4'>Overview</h1>
+      </div>
+      <div className='grid grid-cols-4 gap-4'>
+        {
+          data && data.filter((x: any) => x.keterangan !== 'User').map((item: any, index: number) => (
+            <Card key={index} className='border shadow-none last:col-span-2'>
+              <CardContent className='flex flex-col p-6'>
+                <h1 className='text-4xl font-bold'>{item.total}</h1>
+                <h1 className='text-base opacity-70'>{item.keterangan}</h1>
+              </CardContent>
+            </Card>
+          ))
+        }
+      </div>
     </div>
   )
 }
