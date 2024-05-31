@@ -2,7 +2,6 @@
 
 import React, { useRef } from 'react'
 
-import { useReactToPrint } from 'react-to-print'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
@@ -14,7 +13,7 @@ import { Button } from '@/components/ui/button'
 
 type Props = {}
 
-function index({}: Props) {
+function Index({}: Props) {
   const printRef = useRef<HTMLDivElement>(null)
 
   const handleExportPdf = async () => {
@@ -67,4 +66,4 @@ function index({}: Props) {
   )
 }
 
-export default index
+export default Index
